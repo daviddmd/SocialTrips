@@ -1,0 +1,18 @@
+<div *ngIf="!isLoading">
+  <div class="container">
+    <div class="text-center">
+      <div *ngIf="result; then sucessfulBlock else unsucessfulBlock">
+
+      </div>
+      <ng-template #sucessfulBlock>
+        <h3>A sua conta foi confirmada com sucesso.</h3>
+        <h5>Irá ser automaticamente redireccionado.</h5>
+      </ng-template>
+      <ng-template #unsucessfulBlock>
+        <h3>A sua conta não pode ser confirmada.</h3>
+        <h5>Irá ser automaticamente redireccionado.</h5>
+      </ng-template>
+    </div>
+  </div>
+
+</div>

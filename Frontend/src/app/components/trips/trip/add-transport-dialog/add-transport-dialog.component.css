@@ -1,0 +1,33 @@
+.mat-form-field {
+  display: block;
+}
+.mat-checkbox{
+  display: block;
+}
+table {
+  width: 100%;
+}
+.mat-column-transportType {
+  border-right: 1px solid currentColor;
+  text-align: center;
+}
+.mat-column-description {
+  border-right: 1px solid currentColor;
+  white-space: pre-wrap;
+}
+.mat-column-distance {
+  border-right: 1px solid currentColor;
+  text-align: center;
+}
+.mat-column-departureTime {
+  border-right: 1px solid currentColor;
+  text-align: center;
+}
+.mat-column-arrivalTime {
+  border-right: 1px solid currentColor;
+  text-align: center;
+}
+.mat-column-selection {
+  border-right: 1px solid currentColor;
+  text-align: center;
+}

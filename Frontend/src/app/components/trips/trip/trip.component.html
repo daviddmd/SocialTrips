@@ -1,0 +1,404 @@
+<div [hidden]="isLoadingTrip" class="container">
+  <div class="text-center" *ngIf="!isLoadingTrip">
+    <h1>{{trip.name}}</h1>
+    <div *ngIf="isInGroup">
+      <div *ngIf="isInTrip; then leaveTripDiv else joinTripDiv"></div>
+    </div>
+    <div *ngIf="!isInGroup">
+      <a [routerLink]="['/group',trip.group.id]" class="btn btn-primary" role="button">Junte-se ao Grupo</a>
+    </div>
+    <div *ngIf="isInGroup">
+      <a [routerLink]="['/group',trip.group.id]" class="btn btn-primary" role="button">Voltar ao Grupo</a>
+    </div>
+  </div>
+  <mat-tab-group dynamicHeight mat-align-tabs="center">
+    <mat-tab label="Itinerário">
+      <mat-form-field appearance="fill">
+        <mat-label>Dia do Itinerário</mat-label>
+        <input matInput [matDatepicker]="picker" (dateChange)="updateItinerary()" [formControl]="selectedDate"
+               [min]="tripBeginningDate" [max]="tripEndingDate">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <div class="mat-elevation-z8">
+        <table mat-table [dataSource]="activitiesDataSource">
+          <ng-container matColumnDef="beginningDate">
+            <th mat-header-cell *matHeaderCellDef>Data Início</th>
+            <td mat-cell *matCellDef="let activity">{{activity.beginningDate | date: 'shortTime'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="endingDate">
+            <th mat-header-cell *matHeaderCellDef>Data Fim</th>
+            <td mat-cell *matCellDef="let activity"> {{activity.endingDate | date : 'shortTime'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Descrição</th>
+            <td mat-cell *matCellDef="let activity" [innerHTML]="activity.description"></td>
+          </ng-container>
+
+          <!-- Symbol Column -->
+          <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef>Morada</th>
+            <td mat-cell *matCellDef="let activity"> {{activity.address}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Tipo Atividade/Transporte</th>
+            <td mat-cell *matCellDef="let activity">
+              {{activity.activityType == 1 ? getLocalizedTransportType(activity.transportType) : getLocalizedActivityType(activity.activityType) }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="cost">
+            <th mat-header-cell *matHeaderCellDef>Custo</th>
+            <td mat-cell *matCellDef="let activity">
+              {{activity.expectedBudget | number: '1.0-2' }}€
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Ação</th>
+            <td mat-cell *matCellDef="let activity">
+              <button mat-button color="accent" [disabled]="submittingData || tripFinished"
+                      (click)="editActivity(activity)">Editar
+              </button>
+              <button mat-button color="warn" [disabled]="submittingData || tripFinished"
+                      *ngIf="activity==lastActivityDay"
+                      (click)="deleteActivity(activity)">Remover
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedActivitiesColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedActivitiesColumns;"></tr>
+        </table>
+
+        <mat-paginator #activitiesPaginator="matPaginator" [length]="activitiesDay.length" [pageSizeOptions]="[5, 10, 20]"
+                       showFirstLastButtons
+                       aria-label="Selecione a página das Actividades do Itinerário">
+        </mat-paginator>
+      </div>
+      <input type="text" class="form-control" (keydown.enter)="$event.preventDefault()"
+             autocapitalize="off" #search [disabled]="tripFinished || !isInGroup || !(isAdmin||isManager)">
+      <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom" [fitBounds]="fitBounds"
+               *ngIf="!isLoadingTrip">
+        <ng-container *ngFor="let activity of activitiesDay">
+          <agm-marker [agmFitBounds]="true" [latitude]="activity.latitude" [longitude]="activity.longitude"
+                      *ngIf="activity.activityType!=ACTIVITY_TRANSPORT">
+            <agm-info-window [latitude]="activity.latitude" [longitude]="activity.longitude">
+              <p><b>Descrição:</b> {{activity.description}}</p>
+              <p><b>Morada:</b> {{activity.address}}</p>
+            </agm-info-window>
+          </agm-marker>
+        </ng-container>
+        <agm-polyline [strokeWeight]="strokeWeight" [strokeColor]="'blue'">
+          <agm-icon-sequence [fixedRotation]="false"
+                             [repeat]="'50px'"
+                             [path]="'FORWARD_OPEN_ARROW'">
+          </agm-icon-sequence>
+          <ng-container *ngFor="let activity of activitiesDay">
+            <agm-polyline-point *ngIf="activity.activityType!=ACTIVITY_TRANSPORT" [latitude]="activity.latitude"
+                                [longitude]="activity.longitude">
+            </agm-polyline-point>
+          </ng-container>
+
+        </agm-polyline>
+      </agm-map>
+    </mat-tab>
+
+    <mat-tab label="Utilizadores" *ngIf="!isLoadingTrip">
+      <div class="card-body position-relative">
+        <div class="table-responsive">
+          <table class="table table-bordered heading-hvr">
+            <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Nome de Utilizador</th>
+              <th>Cidade</th>
+              <th>Membro do Grupo Desde</th>
+              <th>Ranking</th>
+              <th>Ação</th>
+            </tr>
+            </thead>
+            <tbody *ngFor="let user of trip.users">
+            <tr>
+              <td [style.color]="user.user.ranking?.color">{{user.user.name}}</td>
+              <td>{{user.user.userName}}</td>
+              <td>{{user.user.city}}</td>
+              <td>{{user.entranceDate  | date:'mediumDate' }}</td>
+              <td [style.color]="user.user.ranking?.color">{{user.user.ranking.name}}</td>
+              <td>
+                <a [routerLink]="['/user', user.user.id]" class="btn btn-primary" role="button">Ver</a>
+                <div *ngIf="isAdmin || isModerator || isManager">
+                  <button [disabled]="submittingData" class="btn btn-danger" (click)="removeUser(user.user.id)">
+                    Remover
+                  </button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!--Lista de Utilizadores Convidados e Caixa para Pesquisar utilizadores para convidar-->
+      <div *ngIf="(isManager || isAdmin || isModerator)">
+        <div *ngIf="trip.invites.length>0">
+          <div class="text-center">
+            <h2>Utilizadores Convidados</h2>
+          </div>
+          <div class="card-body position-relative">
+            <div class="table-responsive">
+              <table class="table table-bordered heading-hvr">
+                <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Nome de Utilizador</th>
+                  <th>Cidade</th>
+                  <th>Ranking</th>
+                  <th>Data do Convite</th>
+                  <th>Ação</th>
+                </tr>
+                </thead>
+                <tbody *ngFor="let invite of trip.invites">
+                <tr>
+                  <td [style.color]="invite.user.ranking.color">{{invite.user.name}}</td>
+                  <td>{{invite.user.userName}}</td>
+                  <td>{{invite.user.city}}</td>
+                  <td>{{invite.user.ranking.name}}</td>
+                  <td>{{invite.invitationDate | date:'mediumDate'}}</td>
+                  <td>
+                    <a [routerLink]="['/user', invite.user.id]" class="btn btn-primary" role="button">Ver Utilizador</a>
+                    <button [disabled]="submittingData" class="btn btn-danger" (click)="removeInvitation(invite.id)">
+                      Remover Convite
+                    </button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <h2>Convidar Utilizador</h2>
+        </div>
+        <form [formGroup]="userInviteSearchForm" (ngSubmit)="searchUsersToInvite()" #f="ngForm">
+          <div class="form-group">
+            <label for="nameOrEmail">Nome ou E-Mail do Utilizador a Convidar</label>
+            <input type="text" id="nameOrEmail" class="form-control"
+                   formControlName="nameOrEmail" required>
+            <div
+              *ngIf="nameOrEmailSearch.invalid && (nameOrEmailSearch.dirty || nameOrEmailSearch.touched || f.submitted)"
+              class="alert alert-danger">
+              <div *ngIf="nameOrEmailSearch.errors?.['required']">Necessita de introduzir o nome ou e-mail para
+                pesquisar
+                utilizadores para convidar
+              </div>
+            </div>
+            <button [disabled]="submittingData" class="btn btn-success">Pesquisar</button>
+          </div>
+        </form>
+        <div class="card" *ngIf="usersSearch | async as searchResults">
+          <div class="card-body position-relative" *ngIf="searchResults.length">
+            <div class="table-responsive">
+              <table class="table table-bordered heading-hvr">
+                <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Nome de Utilizador</th>
+                  <th>Cidade</th>
+                  <th>Data de Adesão</th>
+                  <th>Ranking</th>
+                  <th>Km's Percorridos</th>
+                  <th>Ação</th>
+                </tr>
+                </thead>
+                <tbody *ngFor="let user of searchResults">
+                <tr>
+                  <td [style.color]="user.ranking.color">{{user.name}}</td>
+                  <td>{{user.userName}}</td>
+                  <td>{{user.city}}</td>
+                  <td>{{user.creationDate  | date:'mediumDate' }}</td>
+                  <td>{{user.ranking.name}}</td>
+                  <td>{{user.travelledKilometers}}</td>
+                  <td>
+                    <a [routerLink]="['/user',user.id]" class="btn btn-primary" role="button">Ver Utilizador</a>
+                    <button [disabled]="submittingData" class="btn btn-success" (click)="inviteUser(user.id)">Convidar
+                    </button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Publicações">
+      <mat-form-field>
+        <input
+          matInput
+          (keyup)="searchPosts($event)"
+          placeholder="Procurar Publicações"
+        />
+      </mat-form-field>
+      <table
+        mat-table
+        matSort
+        [dataSource]="postsDataSource"
+        #postTableSort="matSort"
+        class="mat-elevation-z8"
+        style="width: 100%;"
+      >
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Descrição</th>
+          <td mat-cell *matCellDef="let post">{{ post.description }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="user">
+          <th mat-header-cell *matHeaderCellDef>Utilizador</th>
+          <td mat-cell *matCellDef="let post"><a [routerLink]="['/user',post.user.id]">{{post.user.name}}</a></td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Data</th>
+          <td mat-cell *matCellDef="let post">{{ post.date }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="attachments">
+          <th mat-header-cell *matHeaderCellDef>Nº Anexos</th>
+          <td mat-cell *matCellDef="let post">{{ post.attachments.length }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Ação</th>
+          <td mat-cell *matCellDef="let post">
+            <button mat-button [routerLink]="['/post',post.id]">Ver</button>
+            <button mat-button color="accent" *ngIf="ownId == post.user.id || isModerator || isManager || isAdmin" (click)="editPost(post)">Editar</button>
+            <div *ngIf="isModerator || isManager || isAdmin">
+              <button mat-button color="warn" (click)="deletePost(post)">Eliminar</button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedPostsColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedPostsColumns"></tr>
+      </table>
+
+      <mat-paginator
+        #postTablePaginator="matPaginator"
+        [pageSize]="3"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+      ></mat-paginator>
+      <button mat-button color="primary" (click)="createPost()" *ngIf="isInTrip">Criar Publicação</button>
+    </mat-tab>
+    <mat-tab label="Detalhes" *ngIf="!isLoadingTrip">
+      <div class="text-center">
+        <h3>{{trip.description}}</h3>
+        <h4>Custo Esperado Viagem: {{trip.expectedBudget | number: '1.0-2'}} €</h4>
+        <h4>Distância Esperada Viagem: {{trip.totalDistance | number: '1.0-4'}} km</h4>
+        <img [src]="trip.image || default_trip_picture" class="img img-responsive" width="256" alt="Imagem Viagem">
+        <p><b>Data Início: </b>{{trip.beginningDate | date:'mediumDate'}}</p>
+        <p><b>Data Fim: </b>{{trip.endingDate | date:'mediumDate'}}</p>
+        <p><b>Estado Viagem: </b> {{trip.isCompleted ? "Completa" : "A decorrer" }}</p>
+      </div>
+    </mat-tab>
+    <mat-tab label="Configuração" *ngIf="(isAdmin || isManager) && !isLoadingTrip">
+      <form [formGroup]="tripUpdateForm" (ngSubmit)="updateTripDetails()">
+        <mat-form-field appearance="fill">
+          <mat-label>Nome da Viagem</mat-label>
+          <input matInput formControlName="name" required>
+          <mat-error *ngIf="tripName.invalid">Necessita de introduzir o nome do grupo</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Descrição da Viagem</mat-label>
+          <textarea matInput formControlName="description" required></textarea>
+          <mat-error *ngIf="tripDescription.invalid">Necessita de introduzir a descrição do grupo</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput [matDatepicker]="dataInicio"
+                 formControlName="beginningDate">
+          <mat-datepicker-toggle matSuffix
+                                 [for]="dataInicio">
+          </mat-datepicker-toggle>
+          <mat-datepicker #dataInicio></mat-datepicker>
+          <mat-hint>Data de Início da Viagem</mat-hint>
+          <mat-error *ngIf="formTripBeginningDate.errors?.['required']">A data de início é obrigatória</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput [matDatepicker]="dataFim"
+                 formControlName="endingDate">
+          <mat-datepicker-toggle matSuffix
+                                 [for]="dataFim">
+          </mat-datepicker-toggle>
+          <mat-datepicker #dataFim></mat-datepicker>
+          <mat-hint>Data de Fim da Viagem</mat-hint>
+          <mat-error *ngIf="formTripEndingDate.errors?.['required']">A data de fim é obrigatória</mat-error>
+          <mat-error *ngIf="formTripEndingDate.errors?.['validateTripDate']">A data de início da viagem precisa de ser
+            inferior à data de fim da viagem
+          </mat-error>
+        </mat-form-field>
+        <mat-checkbox formControlName="isPrivate">Privada?</mat-checkbox>
+        <mat-checkbox formControlName="isCompleted" *ngIf="!tripFinished">Terminada?</mat-checkbox>
+        <div class="text-center">
+          <button [disabled]="submittingData" mat-button color="primary">Actualizar Detalhes Viagem</button>
+        </div>
+      </form>
+      <div class="text-center">
+        <form [formGroup]="tripImageForm" (ngSubmit)="updateTripImage()" #fi="ngForm">
+          <div class="form-group">
+            <label for="image">Imagem do Grupo</label>
+            <input
+              formControlName="image"
+              id="image"
+              type="file"
+              class="form-control"
+              accept="image/png, image/gif, image/jpeg"
+              (change)="onTripImageChange($event)">
+            <div *ngIf="tripImage.invalid && (fi.submitted || tripImage.touched)" class="alert alert-danger">
+              <div *ngIf="tripImage.errors?.['required']">Precisa de seleccionar uma imagem.</div>
+            </div>
+            <button [disabled]="submittingData" mat-button
+                    color="primary">{{trip.image ? "Actualizar Imagem" : "Inserir Imagem"}}</button>
+          </div>
+        </form>
+        <button *ngIf="trip.image!=null" class="btn btn-danger" [disabled]="submittingData" (click)="removeTripImage()">
+          Remover Imagem do Grupo
+        </button>
+      </div>
+    </mat-tab>
+    <mat-tab label="Auditoria" *ngIf="(isAdmin || isManager || isModerator)&&!isLoadingTrip">
+      <div class="card">
+        <div class="card-body position-relative">
+          <div class="table-responsive">
+            <table class="table table-bordered heading-hvr">
+              <thead>
+              <tr>
+                <th>Data do Evento</th>
+                <th>Nome do Utilizador</th>
+                <th>Tipo do Evento</th>
+              </tr>
+              </thead>
+              <tbody *ngFor="let event of trip.events">
+              <tr>
+                <td>{{event.date | date:'medium'}}</td>
+                <td>{{event.user?.name}}</td>
+                <td>{{getLocalizedEventMessage(event.eventType)}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+
+<ng-template #leaveTripDiv>
+  <button class="btn btn-danger" [disabled]="submittingData" (click)="leaveTrip()">Sair da Viagem</button>
+</ng-template>
+<ng-template #joinTripDiv>
+  <button class="btn btn-success" [disabled]="submittingData" (click)="joinTrip()">Juntar-se à Viagem</button>
+</ng-template>

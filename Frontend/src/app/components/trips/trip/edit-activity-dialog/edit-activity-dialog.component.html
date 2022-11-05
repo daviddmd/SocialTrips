@@ -1,0 +1,67 @@
+<mat-dialog-content>
+  <h1>Actualizar Actividade</h1>
+  <form [formGroup]="updateActivityForm" (ngSubmit)="save()">
+    <mat-form-field>
+      <input matInput type="number"
+             formControlName="expectedBudget" required>
+      <mat-hint>Orçamento Esperado</mat-hint>
+      <mat-error *ngIf="expectedBudget.invalid">O gasto necessário para esta actividade é obrigatório.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput
+             formControlName="address">
+      <mat-hint>Morada/Localização</mat-hint>
+      <mat-error *ngIf="address.invalid">A localização da actividade é obrigatória
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+    <textarea matInput
+              formControlName="description"></textarea>
+      <mat-hint>Descrição/Instruções</mat-hint>
+      <mat-error *ngIf="description.invalid">É necessário inserir instruções/descrição da actividade.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [ngxMatDatetimePicker]="dataInicioPicker" [min]="minimumDate" [max]="maximumDate"
+             formControlName="beginningDate" required>
+      <mat-datepicker-toggle matSuffix
+                             [for]="$any(dataInicioPicker)">
+      </mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #dataInicioPicker></ngx-mat-datetime-picker>
+      <mat-hint>Data de início da actividade</mat-hint>
+      <mat-error *ngIf="beginningDate.invalid">É necessário inserir a data de início da actividade.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [ngxMatDatetimePicker]="dataFimPicker" [min]="minimumDate" [max]="maximumDate"
+             formControlName="endingDate" required>
+      <mat-datepicker-toggle matSuffix
+                             [for]="$any(dataFimPicker)">
+      </mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #dataFimPicker></ngx-mat-datetime-picker>
+      <mat-hint>Data de fim da actividade</mat-hint>
+      <mat-error *ngIf="endingDate.errors?.['required']">É necessário inserir a data de fim da actividade.</mat-error>
+      <mat-error *ngIf="endingDate.errors?.['validateTripDate']">A data de início da actividade precisa de ser
+        inferior à data de fim da actividade
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill" *ngIf="!isTransport">
+      <mat-label>Tipo de Actividade</mat-label>
+      <mat-select required formControlName="activityType">
+        <mat-option *ngFor="let activityType of activityTypes | keyvalue" [value]="activityType.value">
+          {{activityType.key}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" *ngIf="isTransport">
+      <mat-label>Tipo de Transporte</mat-label>
+      <mat-select required formControlName="transportType">
+        <mat-option *ngFor="let transportType of transportTypes | keyvalue" [value]="transportType.value">
+          {{transportType.key}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-dialog-actions>
+      <button class="mat-raised-button" type="button" (click)="close()">Fechar</button>
+      <button class="mat-raised-button mat-primary" type="submit">Actualizar</button>
+    </mat-dialog-actions>
+  </form>
+</mat-dialog-content>

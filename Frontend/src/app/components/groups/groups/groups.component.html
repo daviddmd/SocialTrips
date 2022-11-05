@@ -1,0 +1,64 @@
+<mat-tab-group *ngIf="!isLoading" dynamicHeight mat-align-tabs="center">
+  <mat-tab label="Lista de Grupos">
+    <div class="row justify-content-center">
+      <div class="card" style="width:30rem" *ngFor="let group of allGroups | async">
+        <div class="row" [routerLink]="['/group',group.id]">
+          <div class="col-lg-4">
+            <img [src]="group.image || default_group_picture" class="img img-responsive" width="130">
+          </div>
+          <div class="col-lg-7">
+            <p><b>{{group.name}}</b></p>
+            <p><b>Descrição: </b>{{group.description}}</p>
+            <p><b>Criado em: </b>{{group.creationDate | date:'mediumDate'}}</p>
+          </div>
+        </div>
+      </div>
+      <p *ngIf="!allGroups">Não existem grupos na plataforma!</p>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Os meus Grupos">
+    <a class="nav-link" routerLink="/groups/create" routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }">Criar grupo</a>
+    <div class="text-center">
+      <h2>Os meus grupos</h2>
+    </div>
+    <div class="row justify-content-center">
+      <div class="card" style="width:30rem" *ngFor="let group of user.groups">
+        <div class="row" [routerLink]="['/group',group.group.id]">
+          <div class="col-lg-4">
+            <img [src]="group.group.image || default_group_picture" class="img img-responsive" width="130">
+          </div>
+          <div class="col-lg-7">
+            <p><b>{{group.group.name}}</b></p>
+            <p><b>Descrição: </b>{{group.group.description}}</p>
+            <p><b>Criado em: </b>{{group.group.creationDate | date:'mediumDate'}}</p>
+          </div>
+        </div>
+      </div>
+      <p *ngIf="user.groups?.length==0">Entra num grupo!</p>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Os meus convites">
+    <div class="text-center">
+      <h2>Os meus convites</h2>
+    </div>
+    <div class="row justify-content-center">
+      <div class="card" style="width:30rem" *ngFor="let invite of user.groupInvites">
+        <div class="row" [routerLink]="invite.group.isPrivate ? null : ['/group',invite.group.id]">
+          <div class="col-lg-4">
+            <img [src]="invite.group.image || default_group_picture" class="img img-responsive" width="130">
+          </div>
+          <div class="col-lg-7">
+            <p>Em {{invite.invitationDate | date:'mediumDate'}}, foste convidado para o grupo
+              <b>{{invite.group.name}}</b></p>
+            <button class="btn btn-primary" (click)="acceptInvitation(invite.group.id, invite.id)">Aceitar</button>
+            <button class="btn btn-danger" (click)="declineInvitation(invite.id)">Recusar</button>
+          </div>
+        </div>
+      </div>
+      <p *ngIf="user.groupInvites?.length==0">Não tens convites!</p>
+    </div>
+  </mat-tab>
+</mat-tab-group>

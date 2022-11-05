@@ -1,0 +1,15 @@
+.mat-form-field {
+  display: block;
+}
+.mat-checkbox{
+  display: block;
+}
+agm-map {
+  height: 500px;
+}
+table {
+  width: 100%;
+}
+th.mat-header-cell {
+  text-align: center !important;
+}

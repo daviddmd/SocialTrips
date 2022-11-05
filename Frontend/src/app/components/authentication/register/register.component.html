@@ -1,0 +1,108 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6 offset-sm-3">
+      <div class="text-center">
+        <h2>Registar</h2>
+      </div>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" #f="ngForm">
+        <div class="form-group">
+          <label for="name">Nome</label>
+          <input type="text" id="name" class="form-control"
+                 formControlName="name" required placeholder="Zé">
+          <div *ngIf="name.invalid && (name.dirty || name.touched || f.submitted)"
+               class="alert alert-danger">
+            <div *ngIf="name.errors?.['required']">O nome é obrigatório</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="username">Nome de Utilizador</label>
+          <input type="text" id="username" class="form-control"
+                 formControlName="username" required>
+          <div *ngIf="username.invalid && (username.dirty || username.touched || f.submitted)"
+               class="alert alert-danger">
+            <div *ngIf="username.errors?.['required']">O nome de utilizador é obrigatório</div>
+            <div *ngIf="username.errors?.['pattern']">O nome de utilizador apenas pode ter letras e dígitos</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">E-Mail</label>
+          <input type="email" id="email" class="form-control"
+                 formControlName="email" required>
+          <div *ngIf="email.invalid && (email.dirty || email.touched || f.submitted)"
+               class="alert alert-danger">
+            <div *ngIf="email.errors?.['required']">O E-Mail é obrigatório</div>
+            <div *ngIf="email.errors?.['email']">Este E-Mail não é válido</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Palavra-passe</label>
+          <input type="password" id="password" class="form-control"
+                 formControlName="password" required>
+          <div *ngIf="password.invalid && (password.dirty || password.touched || f.submitted)"
+               class="alert alert-danger">
+            <div *ngIf="password.errors?.['required']">A palavra-passe é obrigatória</div>
+            <div *ngIf="password.errors?.['pattern']">A palavra-passe precisa de pelo menos uma letra e um dígito e
+              no mínimo 6 caracteres
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirmação da Palavra-passe</label>
+          <input type="password" id="confirmPassword" class="form-control"
+                 formControlName="confirmPassword" required>
+          <div *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched || f.submitted)"
+               class="alert alert-danger">
+            <div *ngIf="confirmPassword.errors?.['required']">A confirmação da palavra-passe é obrigatória</div>
+            <div *ngIf="confirmPassword.errors?.['mustMatch']">As palavra-passes não são iguais</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="country">País</label>
+          <select class="form-control" name="country" id="country" formControlName="country" required>
+            <option value="" disabled selected>Seleccione um país</option>
+            <option *ngFor="let country of countries" [value]="country.code">{{country.name}}</option>
+          </select>
+          <div *ngIf="country.invalid && (country.dirty || country.touched || f.submitted)"
+               class="alert alert-danger">
+            <div *ngIf="country.errors?.['required']">A selecção do seu país é obrigatória</div>
+            <div *ngIf="country.errors?.['pattern']">País inválido</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="city">Cidade</label>
+          <input type="text" id="city" class="form-control"
+                 formControlName="city" placeholder="Porto">
+        </div>
+        <div class="form-group">
+          <label for="description">Descrição</label>
+          <textarea id="description" class="form-control"
+                    formControlName="description" placeholder="Fale-nos de si"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="phoneNumber">Número de Telemóvel</label>
+          <input type="text" id="phoneNumber" class="form-control"
+                 formControlName="phoneNumber" placeholder="+351910000000">
+          <div *ngIf="phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched || f.submitted)"
+               class="alert alert-danger">
+            <div *ngIf="phoneNumber.errors?.['pattern']">Número de telemóvel inválido. Exemplo: +351910000000</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="locale">Linguagem</label>
+          <select class="form-control" name="locale" id="locale" formControlName="locale" required>
+            <option value="" disabled selected>Seleccione a sua linguagem</option>
+            <option value="pt_PT">Português</option>
+            <option value="en_US">English</option>
+          </select>
+          <div *ngIf="locale.invalid && (locale.dirty || locale.touched || f.submitted)"
+               class="alert alert-danger">
+            <div *ngIf="country.errors?.['required']">Seleccionar a linguagem é obrigatório</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <button [disabled]="loading" class="btn btn-primary btn-block">Registar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

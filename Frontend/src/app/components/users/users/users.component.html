@@ -1,0 +1,88 @@
+<div>
+  <mat-tab-group dynamicHeight mat-align-tabs="center">
+    <mat-tab label="Pesquisar Utilizadores">
+      <form [formGroup]="userSearchForm" (ngSubmit)="searchUsers()" #f="ngForm">
+        <div class="form-group">
+          <label for="nameOrEmail">Nome ou E-Mail</label>
+          <input type="text" id="nameOrEmail" class="form-control"
+                 formControlName="nameOrEmail" required>
+          <div *ngIf="nameOrEmail.invalid && (nameOrEmail.dirty || nameOrEmail.touched || f.submitted)"
+               class="alert alert-danger">
+            <div *ngIf="nameOrEmail.errors?.['required']">Necessita de introduzir o nome ou e-mail para pesquisar
+              utilizadores
+            </div>
+          </div>
+          <button class="btn btn-success">Pesquisar</button>
+        </div>
+      </form>
+      <div class="card" *ngIf="usersSearch | async as searchResults">
+        <div class="card-body position-relative" *ngIf="searchResults.length">
+          <div class="table-responsive">
+            <table class="table table-bordered heading-hvr">
+              <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Nome de Utilizador</th>
+                <th>Cidade</th>
+                <th>Data de Adesão</th>
+                <th>Ranking</th>
+                <th>Número de Seguidores</th>
+                <th>Km's Percorridos</th>
+                <th>Ação</th>
+              </tr>
+              </thead>
+              <tbody *ngFor="let user of searchResults">
+              <tr>
+                <td>{{user.name}}</td>
+                <td>{{user.userName}}</td>
+                <td>{{user.city}}</td>
+                <td>{{user.creationDate  | date:'mediumDate' }}</td>
+                <td>{{user.ranking?.name}}</td>
+                <td>{{user.followers?.length}}</td>
+                <td>{{user.travelledKilometers | number: '1.0-2'}}</td>
+                <td><a [routerLink]="['/user',user.id]" class="btn btn-primary" role="button">Ver</a></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Lista de Utilizadores" *ngIf="isAdmin">
+      <div class="card">
+        <div class="card-body position-relative">
+          <div class="table-responsive">
+            <table class="table table-bordered heading-hvr">
+              <thead>
+              <tr>
+                <th>Nome</th>
+                <th>E-Mail</th>
+                <th>Nome de Utilizador</th>
+                <th>Cidade</th>
+                <th>Data de Adesão</th>
+                <th>Ranking</th>
+                <th>Número de Seguidores</th>
+                <th>Km's Percorridos</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody *ngFor="let user of allUsers | async">
+              <tr>
+                <td>{{user?.name}}</td>
+                <td>{{user?.email}}</td>
+                <td>{{user?.userName}}</td>
+                <td>{{user?.city}}</td>
+                <td>{{user?.creationDate  | date:'mediumDate' }}</td>
+                <td>{{user?.ranking?.name}}</td>
+                <td>{{user?.followers?.length}}</td>
+                <td>{{user?.travelledKilometers | number: '1.0-2'}}</td>
+                <td><a [routerLink]="['/user',user?.id]" class="btn btn-primary" role="button">Ver</a></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

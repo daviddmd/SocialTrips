@@ -1,0 +1,332 @@
+<div *ngIf="!isLoadingGroup" class="container">
+  <!--Detalhes, utilizadores e viagens são o corpo comum para utilizadores e gestores do grupo-->
+  <div class="text-center">
+    <h1>{{group.name}}</h1>
+    <div *ngIf="isInGroup; then leaveGroupDiv else joinGroupDiv"></div>
+    <h3>{{group.description}}</h3>
+    <h4>Custo Médio Viagem: {{group.averageTripCost | number: '1.0-2'}} €</h4>
+    <h4>Distância média Viagem: {{group.averageTripDistance | number: '1.0-2'}} km</h4>
+    <img [src]="group.image || default_group_picture" class="img img-responsive" width="256" alt="Imagem Grupo">
+  </div>
+  <mat-tab-group dynamicHeight mat-align-tabs="center">
+    <mat-tab label="Viagens">
+      <div class="card" *ngIf="group.trips.length>0">
+        <div class="card-body position-relative">
+          <div class="table-responsive">
+            <table class="table table-bordered heading-hvr">
+              <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Orçamento Esperado</th>
+                <th>Distância</th>
+                <th>Data de Início</th>
+                <th>Data de Fim</th>
+                <th>Ação</th>
+              </tr>
+              </thead>
+              <tbody *ngFor="let trip of group.trips">
+              <tr>
+                <td>{{trip.name}}</td>
+                <td>{{trip.description}}</td>
+                <td>{{trip.expectedBudget | number: '1.0-2'}} €</td>
+                <td>{{trip.totalDistance | number: '1.0-2'}} km</td>
+                <td>{{trip.beginningDate  | date:'mediumDate' }}</td>
+                <td>{{trip.endingDate  | date:'mediumDate' }}</td>
+                <td>
+                  <a [routerLink]="['/trip',trip.id]" class="btn btn-primary" role="button">Ver</a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!--Formulário para criar viagem se for gestor ou admin-->
+      <div *ngIf="(isAdmin || isManager) && isInGroup">
+        <div class="text-center">
+          <h2>Criar Viagem</h2>
+        </div>
+        <form [formGroup]="tripCreateForm" (ngSubmit)="createTrip()">
+          <mat-form-field appearance="fill">
+            <mat-label>Nome da Viagem</mat-label>
+            <input matInput formControlName="name" required>
+            <mat-error *ngIf="tripName.invalid">Necessita de introduzir o nome do grupo</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Descrição da Viagem</mat-label>
+            <textarea matInput formControlName="description" required></textarea>
+            <mat-error *ngIf="tripDescription.invalid">Necessita de introduzir a descrição do grupo</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [min]="minimumTripBeginningDate" [matDatepicker]="dataInicio"
+                   formControlName="beginningDate" required>
+            <mat-datepicker-toggle matSuffix
+                                   [for]="dataInicio">
+            </mat-datepicker-toggle>
+            <mat-datepicker #dataInicio></mat-datepicker>
+            <mat-hint>Data de Início da Viagem</mat-hint>
+            <mat-error *ngIf="tripBeginningDate.errors?.['required']">A data de início é obrigatória</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [min]="minimumTripEndingDate" [matDatepicker]="dataFim"
+                   formControlName="endingDate" required>
+            <mat-datepicker-toggle matSuffix
+                                   [for]="dataFim">
+            </mat-datepicker-toggle>
+            <mat-datepicker #dataFim></mat-datepicker>
+            <mat-hint>Data de Fim da Viagem</mat-hint>
+            <mat-error *ngIf="tripEndingDate.errors?.['required']">A data de fim é obrigatória</mat-error>
+            <mat-error *ngIf="tripEndingDate.errors?.['validateTripDate']">A data de início da viagem precisa de ser inferior à data de fim da viagem</mat-error>
+          </mat-form-field>
+          <mat-checkbox formControlName="isPrivate">Privada?</mat-checkbox>
+          <div class="text-center">
+            <button [disabled]="submittingData" mat-button color="primary">Criar Viagem</button>
+          </div>
+        </form>
+      </div>
+
+    </mat-tab>
+    <mat-tab label="Utilizadores">
+      <!--Lista de utilizadores com botões para expulsar e probir para gestores-->
+      <div class="card-body position-relative">
+        <div class="table-responsive">
+          <table class="table table-bordered heading-hvr">
+            <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Nome de Utilizador</th>
+              <th>Cidade</th>
+              <th>Membro do Grupo Desde</th>
+              <th>Ranking</th>
+              <th>Ação</th>
+            </tr>
+            </thead>
+            <tbody *ngFor="let user of group.users">
+            <tr>
+              <td [style.color]="user.user.ranking.color">{{user.user.name}}</td>
+              <td>{{user.user.userName}}</td>
+              <td>{{user.user.city}}</td>
+              <td>{{user.entranceDate  | date:'mediumDate' }}</td>
+              <td>{{user.user.ranking.name}}</td>
+              <td>
+                <a [routerLink]="['/user', user.user.id]" class="btn btn-primary" role="button">Ver</a>
+                <div *ngIf="(isAdmin || isModerator || isManager) && user.user.id != ownId">
+                  <button class="btn btn-danger" [disabled]="submittingData" (click)="banUser(user.user.id,user.user.userName)">Proibir</button>
+                  <button class="btn btn-danger" [disabled]="submittingData" (click)="removeUser(user.user.id)">Remover</button>
+                  <mat-select [disabled]="submittingData" [value]="user.role" (selectionChange)="updateUserGroupRole($event.value,user)">
+                    <mat-option *ngFor="let role of groupRoles | keyvalue" [value]="role.value">
+                      {{role.key}}
+                    </mat-option>
+                  </mat-select>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!--Lista de Utilizadores Convidados e Caixa para Pesquisar utilizadores para convidar-->
+      <div *ngIf="(isManager || isAdmin || isModerator)">
+        <div *ngIf="group.invites.length>0">
+          <div class="text-center">
+            <h2>Utilizadores Convidados</h2>
+          </div>
+          <div class="card-body position-relative">
+            <div class="table-responsive">
+              <table class="table table-bordered heading-hvr">
+                <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Nome de Utilizador</th>
+                  <th>Cidade</th>
+                  <th>Ranking</th>
+                  <th>Data do Convite</th>
+                  <th>Ação</th>
+                </tr>
+                </thead>
+                <tbody *ngFor="let invite of group.invites">
+                <tr>
+                  <td [style.color]="invite.user.ranking.color">{{invite.user.name}}</td>
+                  <td>{{invite.user.userName}}</td>
+                  <td>{{invite.user.city}}</td>
+                  <td>{{invite.user.ranking.name}}</td>
+                  <td>{{invite.invitationDate | date:'mediumDate'}}</td>
+                  <td>
+                    <a [routerLink]="['/user', invite.user.id]" class="btn btn-primary" role="button">Ver Utilizador</a>
+                    <button class="btn btn-danger" [disabled]="submittingData" (click)="removeInvitation(invite.id)">Remover Convite</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <h2>Convidar Utilizador</h2>
+        </div>
+        <form [formGroup]="userInviteSearchForm" (ngSubmit)="searchUsersToInvite()" #f="ngForm">
+          <div class="form-group">
+            <label for="nameOrEmail">Nome ou E-Mail do Utilizador a Convidar</label>
+            <input type="text" id="nameOrEmail" class="form-control"
+                   formControlName="nameOrEmail" required>
+            <div
+              *ngIf="nameOrEmailSearch.invalid && (nameOrEmailSearch.dirty || nameOrEmailSearch.touched || f.submitted)"
+              class="alert alert-danger">
+              <div *ngIf="nameOrEmailSearch.errors?.['required']">Necessita de introduzir o nome ou e-mail para
+                pesquisar
+                utilizadores para convidar
+              </div>
+            </div>
+            <button [disabled]="submittingData" class="btn btn-success">Pesquisar</button>
+          </div>
+        </form>
+        <div class="card" *ngIf="usersSearch | async as searchResults">
+          <div class="card-body position-relative" *ngIf="searchResults.length">
+            <div class="table-responsive">
+              <table class="table table-bordered heading-hvr">
+                <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Nome de Utilizador</th>
+                  <th>Cidade</th>
+                  <th>Data de Adesão</th>
+                  <th>Ranking</th>
+                  <th>Km's Percorridos</th>
+                  <th>Ação</th>
+                </tr>
+                </thead>
+                <tbody *ngFor="let user of searchResults">
+                <tr>
+                  <td [style.color]="user.ranking.color">{{user.name}}</td>
+                  <td>{{user.userName}}</td>
+                  <td>{{user.city}}</td>
+                  <td>{{user.creationDate  | date:'mediumDate' }}</td>
+                  <td>{{user.ranking.name}}</td>
+                  <td>{{user.travelledKilometers | number: '1.0-2'}}</td>
+                  <td>
+                    <a [routerLink]="['/user',user.id]" class="btn btn-primary" role="button">Ver Utilizador</a>
+                    <button class="btn btn-success" [disabled]="submittingData" (click)="inviteUser(user.id)">Convidar</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--Lista de utilizadores banidos com botão para unban-->
+      <div *ngIf="isModerator || isAdmin || isModerator">
+        <div *ngIf="group.bans.length>0">
+          <div class="text-center">
+            <h2>Utilizadores Proibidos</h2>
+          </div>
+          <div class="card-body position-relative">
+            <div class="table-responsive">
+              <table class="table table-bordered heading-hvr">
+                <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Nome de Utilizador</th>
+                  <th>Cidade</th>
+                  <th>Ranking</th>
+                  <th>Data de Expiração da Proibição</th>
+                  <th>Razão da Proibição</th>
+                  <th>Ação</th>
+                </tr>
+                </thead>
+                <tbody *ngFor="let ban of group.bans">
+                <tr>
+                  <td>{{ban.user.name}}</td>
+                  <td>{{ban.user.userName}}</td>
+                  <td>{{ban.user.city}}</td>
+                  <td>{{ban.user.ranking.name}}</td>
+                  <td>{{ban.banUntil | date:'mediumDate'}}</td>
+                  <td>{{ban.banReason}}</td>
+                  <td>
+                    <a [routerLink]="['/user', ban.user.id]" class="btn btn-primary" role="button">Ver Utilizador</a>
+                    <button [disabled]="submittingData" class="btn btn-danger" (click)="unbanUser(ban.id)">Remover Proibição</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </mat-tab>
+    <!--Formulário para editar detalhes grupo e imagem do mesmo-->
+    <mat-tab label="Configuração" *ngIf="isAdmin || isManager">
+      <form [formGroup]="groupUpdateForm" (ngSubmit)="updateGroupDetails()" #f="ngForm">
+        <mat-form-field appearance="fill">
+          <mat-label>Nome do Grupo</mat-label>
+          <input matInput formControlName="name" required>
+          <mat-error *ngIf="groupName.invalid">Necessita de introduzir o nome do grupo</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Descrição</mat-label>
+          <input matInput formControlName="description" required>
+          <mat-error *ngIf="groupDescription.invalid">Necessita de introduzir a descrição do grupo</mat-error>
+        </mat-form-field>
+        <mat-checkbox formControlName="isPrivate">Privado?</mat-checkbox>
+        <mat-checkbox formControlName="isFeatured" *ngIf="isAdmin">Destacado?</mat-checkbox>
+        <button [disabled]="submittingData" mat-button color="primary">Actualizar Detalhes</button>
+      </form>
+      <div class="text-center">
+        <form [formGroup]="groupImageForm" (ngSubmit)="updateGroupPicture()" #fi="ngForm">
+          <div class="form-group">
+            <label for="image">Imagem do Grupo</label>
+            <input
+              formControlName="image"
+              id="image"
+              type="file"
+              class="form-control"
+              accept="image/png, image/gif, image/jpeg"
+              (change)="onGroupImageChange($event)">
+            <div *ngIf="groupImage.invalid && (fi.submitted || groupImage.touched)" class="alert alert-danger">
+              <div *ngIf="groupImage.errors?.['required']">Precisa de seleccionar uma imagem.</div>
+            </div>
+            <button [disabled]="submittingData"
+                    class="btn btn-success">{{group.image ? "Actualizar Imagem" : "Inserir Imagem"}}</button>
+          </div>
+        </form>
+        <button *ngIf="group.image!=null" class="btn btn-danger" [disabled]="submittingData" (click)="removeGroupPicture()">Remover Imagem do Grupo
+        </button>
+      </div>
+    </mat-tab>
+    <mat-tab label="Auditoria" *ngIf="isAdmin || isManager">
+      <div class="card">
+        <div class="card-body position-relative">
+          <div class="table-responsive">
+            <table class="table table-bordered heading-hvr">
+              <thead>
+              <tr>
+                <th>Data do Evento</th>
+                <th>Nome do Utilizador</th>
+                <th>Tipo do Evento</th>
+              </tr>
+              </thead>
+              <tbody *ngFor="let event of group.events">
+              <tr>
+                <td>{{event.date | date:'medium'}}</td>
+                <td>{{event.user?.name}}</td>
+                <td>{{getLocalizedEventMessage(event.eventType)}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+
+<ng-template #leaveGroupDiv>
+  <button class="btn btn-danger" [disabled]="submittingData" (click)="leave()">Sair do Grupo</button>
+</ng-template>
+<ng-template #joinGroupDiv>
+  <button class="btn btn-success" [disabled]="submittingData" (click)="join()">Aderir ao Grupo</button>
+</ng-template>

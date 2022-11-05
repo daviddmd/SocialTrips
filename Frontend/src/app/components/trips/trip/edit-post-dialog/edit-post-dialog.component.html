@@ -1,0 +1,44 @@
+<mat-dialog-content>
+  <h1>Editar Publicação</h1>
+  <form [formGroup]="postEditForm" (ngSubmit)="save()">
+    <mat-form-field>
+      <textarea matInput
+                formControlName="description" required></textarea>
+      <mat-hint>Descrição/Corpo da Publicação</mat-hint>
+      <mat-error *ngIf="description.invalid">A descrição/texto da publicação é obrigatória.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [ngxMatDatetimePicker]="dataPostPicker" [min]="minimumDate" [max]="maximumDate"
+             formControlName="date" required>
+      <mat-datepicker-toggle matSuffix
+                             [for]="$any(dataPostPicker)">
+      </mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #dataPostPicker></ngx-mat-datetime-picker>
+      <mat-hint>Data do evento da publicação</mat-hint>
+      <mat-error *ngIf="date.invalid">É necessário inserir a data do evento da publicação.</mat-error>
+    </mat-form-field>
+    <mat-checkbox formControlName="isHidden">Eliminar Publicação?</mat-checkbox>
+    <button class="mat-raised-button" type="button" (click)="close()">Fechar</button>
+    <button class="mat-raised-button mat-primary" type="submit">Actualizar</button>
+  </form>
+  <mat-divider></mat-divider>
+  <h3>Adicionar Anexo</h3>
+  <form [formGroup]="postAttachmentForm" (ngSubmit)="addImageToPost()" #fi="ngForm">
+    <div class="form-group">
+      <input
+        formControlName="attachment"
+        id="image"
+        type="file"
+        class="form-control"
+        accept="image/png, image/gif, image/jpeg"
+        (change)="onAttachmentChange($event)">
+      <button [disabled]="submittingData" mat-button
+              color="primary">Adicionar Imagem</button>
+    </div>
+  </form>
+  <h3>Anexos na Publicação</h3>
+  <div *ngFor="let attachment of post.attachments">
+    <img mat-card-image [src]="attachment.url" [width]="256">
+    <button mat-button color="warn" (click)="removeAttachmentFromPost(attachment)">Remover Anexo</button>
+  </div>
+</mat-dialog-content>

@@ -1,0 +1,78 @@
+<div *ngIf="!isLoading">
+  <mat-tab-group dynamicHeight mat-align-tabs="center">
+    <mat-tab label="Locais mais visitados">
+      <div class="row justify-content-center">
+        <google-chart [title]="title" [type]="type" [data]="data" [columns]="columnNames" [options]="options"
+                      [width]="width" [height]="height">
+        </google-chart>
+      </div>
+    </mat-tab>
+    <mat-tab label="Top 10 de viagens com mais Kms">
+      <div class="row justify-content-center">
+        <google-chart  [title]="title2" [type]="type2" [data]="data2" [columns]="columnNames2"
+                      [options]="options2"
+                      [width]="width2" [height]="height2">
+        </google-chart>
+      </div>
+
+    </mat-tab>
+    <mat-tab label="Top 10 de grupos com mais Kms">
+      <div class="row justify-content-center">
+        <google-chart [title]="title3" [type]="type3" [data]="data3" [columns]="columnNames3"
+                      [options]="options3"
+                      [width]="width3" [height]="height3">
+        </google-chart>
+      </div>
+    </mat-tab>
+    <mat-tab label="Transporte mais utilizado">
+      <div class="row justify-content-center">
+        <google-chart [title]="title1" [type]="type1" [data]="data1" [columns]="columnNames1"
+                      [options]="options1"
+                      [width]="width1" [height]="height1">
+        </google-chart>
+      </div>
+    </mat-tab>
+    <mat-tab label="Distribuição de rankings">
+      <div class="row justify-content-center">
+        <google-chart [title]="title4" [type]="type4" [data]="data4" [columns]="columnNames4"
+                      [options]="options4"
+                      [width]="width4" [height]="height4">
+        </google-chart>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+
+<!--<div class="text-center">
+  <h2>Estatísticas da plataforma</h2>
+</div>
+<div class="row">
+  <div class="col">
+    <google-chart #chart [title]="title" [type]="type" [data]="data" [columns]="columnNames" [options]="options"
+      [width]="width" [height]="height">
+    </google-chart>
+  </div>
+  <div class="col">
+    <google-chart #chart [title]="title2" [type]="type2" [data]="data2" [columns]="columnNames2" [options]="options2"
+      [width]="width2" [height]="height2">
+    </google-chart>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <google-chart #chart [title]="title3" [type]="type3" [data]="data3" [columns]="columnNames3" [options]="options3"
+      [width]="width3" [height]="height3">
+    </google-chart>
+  </div>
+  <div class="col">
+    <google-chart #chart [title]="title1" [type]="type1" [data]="data1" [columns]="columnNames1" [options]="options1"
+      [width]="width1" [height]="height1">
+    </google-chart>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <google-chart #chart [title]="title4" [type]="type4" [data]="data4" [columns]="columnNames4" [options]="options4"
+    [width]="width4" [height]="height4">
+  </google-chart>
+</div>-->

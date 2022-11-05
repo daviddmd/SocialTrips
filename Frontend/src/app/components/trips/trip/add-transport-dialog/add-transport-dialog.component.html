@@ -1,0 +1,110 @@
+<mat-dialog-content>
+  <h1>Transporte para {{activityToAdd.name}}</h1>
+  <form [formGroup]="createTransportForm" (ngSubmit)="save()">
+    <mat-form-field>
+      <input matInput type="number"
+             formControlName="expectedBudget" required>
+      <mat-hint>Orçamento Esperado</mat-hint>
+      <mat-error *ngIf="expectedBudget.invalid">O gasto necessário para este transporte é obrigatório.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput
+             formControlName="address">
+      <mat-hint>Morada/Localização</mat-hint>
+      <mat-error *ngIf="address.invalid">A morada ou localização/ponto de encontro do transporte é obrigatória.
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+    <textarea matInput
+              formControlName="description"></textarea>
+      <mat-hint>Descrição/Instruções</mat-hint>
+      <mat-error *ngIf="description.invalid">É necessário inserir instruções/descrição do transporte.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [ngxMatDatetimePicker]="dataInicioPicker" [min]="minimumDate" [max]="maximumDate"
+             formControlName="beginningDate" required>
+      <mat-datepicker-toggle matSuffix
+                             [for]="$any(dataInicioPicker)">
+      </mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #dataInicioPicker></ngx-mat-datetime-picker>
+      <mat-hint>Data de início do transporte</mat-hint>
+      <mat-error *ngIf="beginningDate.invalid">É necessário inserir a data de início do transporte.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [ngxMatDatetimePicker]="dataFimPicker" [min]="minimumDate" [max]="maximumDate"
+             formControlName="endingDate" required>
+      <mat-datepicker-toggle matSuffix
+                             [for]="$any(dataFimPicker)">
+      </mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #dataFimPicker></ngx-mat-datetime-picker>
+      <mat-hint>Data de fim do transporte</mat-hint>
+      <mat-error *ngIf="endingDate.errors?.['required']">É necessário inserir a data de fim do transporte.</mat-error>
+      <mat-error *ngIf="endingDate.errors?.['validateTripDate']">A data de início do transporte precisa de ser
+        inferior à data de fim do transporte
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Tipo de Transporte</mat-label>
+      <mat-select required formControlName="transportType">
+        <mat-option *ngFor="let transportType of transportTypes | keyvalue" [value]="transportType.value">
+          {{transportType.key}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [ngxMatDatetimePicker]="horaPesquisaPicker" [min]="minimumDate" [max]="maximumDate"
+             (dateChange)="onTransportDateChange($event)" [formControl]="transportSearchDate">
+      <mat-datepicker-toggle matSuffix
+                             [for]="$any(horaPesquisaPicker)">
+      </mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #horaPesquisaPicker></ngx-mat-datetime-picker>
+      <mat-hint>Data de pesquisa de transporte</mat-hint>
+    </mat-form-field>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <ng-container matColumnDef="transportType">
+        <th mat-header-cell *matHeaderCellDef>Tipo Transporte</th>
+        <td mat-cell *matCellDef="let element"> {{getTransportTypeName(element.transportType)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Instruções</th>
+        <td mat-cell [innerHTML]="element.description" *matCellDef="let element"></td>
+      </ng-container>
+
+      <ng-container matColumnDef="distance">
+        <th mat-header-cell *matHeaderCellDef>Distância</th>
+        <td mat-cell
+            *matCellDef="let element"> {{element.distance > 1000 ? element.distance / 1000 + 'km' : element.distance + 'm'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="departureTime">
+        <th mat-header-cell *matHeaderCellDef>Data Partida</th>
+        <td mat-cell *matCellDef="let element"> {{element.departureTime | date: 'shortTime'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="arrivalTime">
+        <th mat-header-cell *matHeaderCellDef>Data Chegada</th>
+        <td mat-cell *matCellDef="let element"> {{element.arrivalTime | date: 'shortTime'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="selection">
+        <th mat-header-cell *matHeaderCellDef>Escolha</th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index;">
+          <mat-radio-button color="primary"
+                            [value]="rowIndex"
+                            (change)="changeTransport($event,element)"
+                            [checked]="element.selected">
+          </mat-radio-button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-dialog-actions>
+      <button class="mat-raised-button" type="button" (click)="close()">Fechar</button>
+      <button class="mat-raised-button mat-primary" type="submit">Criar</button>
+    </mat-dialog-actions>
+  </form>
+</mat-dialog-content>
+
+
+

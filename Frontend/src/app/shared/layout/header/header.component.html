@@ -1,0 +1,84 @@
+<nav class="navbar navbar-dark bg-dark navbar-expand">
+  <a class="navbar-brand" routerLink="/">Viagens Sociais</a>
+  <div class="collapse navbar-collapse">
+
+    <!-- Adicionar opções para admin-->
+    <!-- Show this for logged in users -->
+    <div *ngIf="isLoggedIn; then loggedInBlock else loggedOutBlock"></div>
+    <ng-template #loggedInBlock>
+      <ul class="nav navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link"
+             routerLink="/groups"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">
+            Grupos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             routerLink="/trips"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">
+            Viagens
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             routerLink="/users"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">
+            Utilizadores
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin">
+          <a class="nav-link"
+             routerLink="/statistics"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">
+            Estatísticas
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin">
+          <a class="nav-link"
+             routerLink="/rankings"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">
+            Rankings
+          </a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item" ngbDropdown display="dynamic">
+          <a class="nav-link" tabindex="0" ngbDropdownToggle id="navbarDropdown" role="button">
+            {{username}}
+          </a>
+          <div ngbDropdownMenu aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" routerLink="/me">Gerir Perfil</a>
+            <a class="dropdown-item" (click)="logout()">Logout</a>
+          </div>
+        </li>
+      </ul>
+    </ng-template>
+    <ng-template #loggedOutBlock>
+      <ul *ngIf="!isLoggedIn"
+          class="nav navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link"
+             routerLink="/login"
+             routerLinkActive="active">
+            Login
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             routerLink="/register"
+             routerLinkActive="active">
+            Registar
+          </a>
+        </li>
+      </ul>
+    </ng-template>
+  </div>
+</nav>

@@ -1,0 +1,75 @@
+<h2 class="text-center">Grupos Recomendados para Si</h2>
+<div class="row justify-content-center">
+  <div class="card" style="width:30rem" *ngFor="let group of recommendedGroups">
+    <div class="row" [routerLink]="['/group',group.id]">
+      <div class="col-lg-4">
+        <img [src]="group.image || default_group_picture" class="img img-responsive" width="130">
+      </div>
+      <div class="col-lg-7">
+        <p><b>{{group.name}}</b></p>
+        <p><b>Descrição: </b>{{group.description}}</p>
+        <p><b>Criado em: </b>{{group.creationDate | date:'mediumDate'}}</p>
+      </div>
+    </div>
+  </div>
+  <p *ngIf="recommendedGroups.length == 0">Não existem grupos recomendados na plataforma!</p>
+</div>
+<h2 class="text-center">Grupos Destacados</h2>
+<div class="row justify-content-center">
+  <div class="card" style="width:30rem" *ngFor="let group of featuredGroups">
+    <div class="row" [routerLink]="['/group',group.id]">
+      <div class="col-lg-4">
+        <img [src]="group.image || default_group_picture" class="img img-responsive" width="130">
+      </div>
+      <div class="col-lg-7">
+        <p><b>{{group.name}}</b></p>
+        <p><b>Descrição: </b>{{group.description}}</p>
+        <p><b>Criado em: </b>{{group.creationDate | date:'mediumDate'}}</p>
+      </div>
+    </div>
+  </div>
+  <p *ngIf="featuredGroups.length == 0">Não existem grupos destacados na plataforma!</p>
+</div>
+<h2 class="text-center">Viagens Recomendadas para Si</h2>
+<div class="row justify-content-center">
+  <div class="card" style="width:30rem" *ngFor="let trip of recommendedTrips">
+    <div class="row" [routerLink]="['/group',trip.id]">
+      <div class="col-lg-4">
+        <img [src]="trip.image || default_trip_picture" class="img img-responsive" width="130">
+      </div>
+      <div class="col-lg-7">
+        <p><b>{{trip.name}}</b></p>
+        <p><b>Descrição: </b>{{trip.description}}</p>
+        <p><b>Inicia a: </b>{{trip.beginningDate | date:'mediumDate'}}</p>
+        <p><b>Acaba em: </b>{{trip.endingDate | date:'mediumDate'}}</p>
+        <p *ngIf="trip.isCompleted"><b>A viagem acabou!</b></p>
+      </div>
+    </div>
+  </div>
+  <p *ngIf="recommendedTrips.length == 0">Não existem mais viagens recomendadas na plataforma!</p>
+</div>
+<h2 class="text-center">Últimas publicações da comunidade</h2>
+<div class="row justify-content-center">
+  <div class="card" style="width:30rem" *ngFor="let post of latestPostsCommunity">
+    <div class="row" [routerLink]="['/post',post.id]">
+      <p><b>{{post.user.name}}</b></p>
+      <p><b>Descrição: </b>{{post.description}}</p>
+      <p><b>Data </b>{{post.date | date:'mediumDate'}}</p>
+    </div>
+  </div>
+  <p *ngIf="latestPostsCommunity.length == 0">Não existem publicações na plataforma!</p>
+</div>
+<div *ngIf="isLoggedIn">
+  <h2 class="text-center">Últimas publicações dos seus amigos</h2>
+  <div class="row justify-content-center">
+    <div class="card" style="width:30rem" *ngFor="let post of latestPostsFriends">
+      <div class="row" [routerLink]="['/post',post.id]">
+        <p><b>{{post.user.name}}</b></p>
+        <p><b>Descrição: </b>{{post.description}}</p>
+        <p><b>Data </b>{{post.date | date:'mediumDate'}}</p>
+      </div>
+    </div>
+    <p *ngIf="latestPostsFriends.length == 0">Os seus amigos ainda não publicaram nada!</p>
+  </div>
+</div>
+<!--https://material.angular.io/components/card/overview usar isto para alguns dos componentes? usei no post, ficou fixe-->

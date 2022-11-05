@@ -1,0 +1,71 @@
+<mat-tab-group dynamicHeight mat-align-tabs="center">
+  <mat-tab label="Todos os rankings">
+    <div class="card">
+      <div class="card-body position-relative">
+        <div class="table-responsive">
+          <table class="table table-bordered heading-hvr">
+            <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Descrição</th>
+              <th>Número Mínimo de Quilómetros</th>
+              <th>Cor</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody *ngFor="let ranking of allRankings | async" [style.color]="ranking.color">
+            <tr>
+              <td>{{ranking.name}}</td>
+              <td>{{ranking.description}}</td>
+              <td>{{ranking.minimumKilometers}}</td>
+              <td [style.backgroundColor]="ranking.color"></td>
+              <td><a class="btn btn-primary" (click)="updateRanking(ranking)" role="button">Editar</a><a
+                class="btn btn-danger" *ngIf="!(ranking.id == '1')" (click)="deleteRanking(ranking)" role="button">Remover</a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Criar ranking">
+    <div class="row">
+      <div class="col-sm-6 offset-sm-3">
+        <div class="text-center">
+          <h2>Criar Ranking</h2>
+        </div>
+        <form [formGroup]="createRankingForm" (ngSubmit)="onSubmit()" #f="ngForm">
+          <mat-form-field>
+            <input matInput
+                   formControlName="name" required>
+            <mat-hint>Nome</mat-hint>
+            <mat-error *ngIf="name.invalid">O nome do ranking é obrigatório</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <textarea matInput
+                      formControlName="description" required></textarea>
+            <mat-hint>Descrição</mat-hint>
+            <mat-error *ngIf="description.invalid">A descrição do ranking é obrigatória</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [ngxMatColorPicker]="colorPicker" formControlName="color" required>
+            <mat-hint>Cor</mat-hint>
+            <ngx-mat-color-toggle matSuffix [for]="colorPicker"></ngx-mat-color-toggle>
+            <ngx-mat-color-picker #colorPicker></ngx-mat-color-picker>
+            <mat-error *ngIf="color.invalid">A cor do ranking é obrigatória</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput type="number"
+                   formControlName="minimumKilometers" required [min]="1">
+            <mat-hint>Nº Mínimo de Kms</mat-hint>
+            <mat-error *ngIf="minimumKilometers.invalid">O número mínimo de quilómetros para um ranking é obrigatório.
+            </mat-error>
+          </mat-form-field>
+          <button class="mat-raised-button mat-primary" [disabled]="isSubmitting" type="submit">Criar</button>
+        </form>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>

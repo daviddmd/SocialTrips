@@ -1,0 +1,222 @@
+<div *ngIf="!loadingData" class="container">
+  <div class="text-center">
+    <h2>{{user.userName}}</h2>
+    <div *ngIf="!isMyself">
+      <div *ngIf="isFollowing; then unfollowDiv else followDiv"></div>
+    </div>
+    <h3 [style.color]="user.ranking?.color">Ranking: {{user.ranking?.name}}</h3>
+    <img [src]="user.photo || default_user_picture" class="img img-responsive" width="256">
+    <p><b>Membro Desde: </b> {{user.creationDate | date:'mediumDate' }}</p>
+  </div>
+  <mat-tab-group dynamicHeight mat-align-tabs="center">
+    <mat-tab label="Detalhes">
+      <div *ngIf="isAdmin; then adminForm else userPage"></div>
+    </mat-tab>
+    <mat-tab label="Seguidores">
+      <div class="row">
+        <div class="col-sm-6 offset-sm-3">
+          <ul>
+            <li *ngFor="let user of user.followers"><a [routerLink]="['/user',user.id]">{{user.name}}</a></li>
+          </ul>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Seguindo">
+      <div class="row">
+        <div class="col-sm-6 offset-sm-3">
+          <ul>
+            <li *ngFor="let user of user.following"><a [routerLink]="['/user',user.id]">{{user.name}}</a></li>
+          </ul>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Publicações">
+      <div class="row" *ngIf="user.posts?.length!=0">
+        <div class="col-sm-6 offset-sm-3">
+          <div class="row justify-content-center">
+            <div class="card" style="width:30rem" *ngFor="let post of user.posts">
+              <div class="row" [routerLink]="['/post',post.id]">
+                <p><b>Descrição: </b>{{post.description}}</p>
+                <p><b>Data </b>{{post.date | date:'mediumDate'}}</p>
+              </div>
+            </div>
+            <p *ngIf="user.posts.length == 0">Os seus amigos ainda não publicaram nada!</p>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Grupos">
+      <div class="row" *ngIf="user.groups?.length!=0">
+        <div class="col-sm-6 offset-sm-3">
+          <div class="row justify-content-center">
+            <div class="card" style="width:30rem" *ngFor="let group of user.groups">
+              <div class="row" [routerLink]="['/group',group.group.id]">
+                <div class="col-lg-4">
+                  <img [src]="group.group.image || default_group_picture" class="img img-responsive" width="130">
+                </div>
+                <div class="col-lg-7">
+                  <p><b>{{group.group.name}}</b></p>
+                  <p><b>Descrição: </b>{{group.group.description}}</p>
+                  <p><b>Criado em: </b>{{group.group.creationDate | date:'mediumDate'}}</p>
+                </div>
+              </div>
+            </div>
+            <p *ngIf="!user.groups">Não existem grupos na plataforma!</p>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Viagens">
+      <div class="row" *ngIf="user.trips?.length!=0">
+        <div class="col-sm-6 offset-sm-3">
+          <div class="row justify-content-center">
+            <div class="card" style="width:30rem" *ngFor="let trip of user.trips">
+              <div class="row" [routerLink]="['/trip',trip.trip.id]">
+                <div class="col-lg-4">
+                  <img [src]="trip.trip.image || default_trip_picture" class="img img-responsive" width="130">
+                </div>
+                <div class="col-lg-7">
+                  <p><b>{{trip.trip.name}}</b></p>
+                  <p><b>Descrição: </b>{{trip.trip.description}}</p>
+                  <p><b>Inicia a: </b>{{trip.trip.beginningDate | date:'mediumDate'}}</p>
+                  <p><b>Acaba em: </b>{{trip.trip.endingDate | date:'mediumDate'}}</p>
+                  <p *ngIf="trip.trip.isCompleted"><b>A viagem acabou!</b></p>
+                </div>
+              </div>
+            </div>
+            <p *ngIf="user.trips?.length==0">Entra numa viagem!</p>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+
+<ng-template #unfollowDiv>
+  <button class="btn btn-danger" [disabled]="isLoading" (click)="unfollow()">Deixar de Seguir</button>
+</ng-template>
+<ng-template #followDiv>
+  <button class="btn btn-success" [disabled]="isLoading" (click)="follow()">Seguir</button>
+</ng-template>
+
+<ng-template #userPage>
+  <div class="row">
+    <div class="col-sm-6 offset-sm-3">
+      <p><b>Nome: </b> {{user.name}}</p>
+      <p><b>País: </b>{{getCountryFromId(user.country).name}}</p>
+      <p *ngIf="user.city"><b>Cidade: </b> {{user.city}}</p>
+      <p *ngIf="user.twitter"><b>Twitter: </b> {{user.twitter}}</p>
+      <p *ngIf="user.instagram"><b>Instagram: </b> {{user.instagram}}</p>
+      <p *ngIf="user.facebook"><b>Facebook: </b> {{user.facebook}}</p>
+      <p *ngIf="user.description"><b>Descrição: </b> {{user.description}}</p>
+      <p *ngIf="user.phoneNumber"><b>Telemóvel: </b> {{user.phoneNumber}}</p>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #adminForm>
+  <div class="row">
+    <div class="col-sm-6 offset-sm-3">
+      <form [formGroup]="form" (ngSubmit)="update()" #f="ngForm">
+        <div class="form-group">
+          <label for="name">Nome</label>
+          <input type="text" id="name" class="form-control" formControlName="name" required placeholder="Zé">
+          <div *ngIf="name.invalid && (name.dirty || name.touched || f.submitted)" class="alert alert-danger">
+            <div *ngIf="name.errors?.['required']">O nome é obrigatório</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">E-Mail</label>
+          <input type="email" id="email" class="form-control" formControlName="email" required>
+          <div *ngIf="email.invalid && (email.dirty || email.touched || f.submitted)" class="alert alert-danger">
+            <div *ngIf="email.errors?.['required']">O E-Mail é obrigatório</div>
+            <div *ngIf="email.errors?.['email']">Este E-Mail não é válido</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="country">País</label>
+          <select class="form-control" name="country" id="country" formControlName="country" required>
+            <option value="" disabled selected>Seleccione um país</option>
+            <option *ngFor="let country of countries" [value]="country.code">{{country.name}}</option>
+          </select>
+          <div *ngIf="country.invalid && (country.dirty || country.touched || f.submitted)" class="alert alert-danger">
+            <div *ngIf="country.errors?.['required']">A selecção do seu país é obrigatória</div>
+            <div *ngIf="country.errors?.['pattern']">País inválido</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="city">Cidade</label>
+          <input type="text" id="city" class="form-control" formControlName="city" placeholder="Porto">
+        </div>
+        <div class="form-group">
+          <label for="twitter">Twitter</label>
+          <input type="text" id="twitter" class="form-control" formControlName="twitter">
+        </div>
+        <div class="form-group">
+          <label for="instagram">Instagram</label>
+          <input type="text" id="instagram" class="form-control" formControlName="instagram">
+        </div>
+        <div class="form-group">
+          <label for="facebook">Facebook</label>
+          <input type="text" id="facebook" class="form-control" formControlName="facebook">
+        </div>
+        <div class="form-group">
+          <label for="description">Descrição</label>
+          <textarea id="description" class="form-control" formControlName="description"
+            placeholder="Fale-nos de si"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="phoneNumber">Número de Telemóvel</label>
+          <input type="text" id="phoneNumber" class="form-control" formControlName="phoneNumber"
+            placeholder="+351910000000">
+          <div *ngIf="phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched || f.submitted)"
+            class="alert alert-danger">
+            <div *ngIf="phoneNumber.errors?.['pattern']">Número de telemóvel inválido. Exemplo: +351910000000</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="locale">Linguagem</label>
+          <select class="form-control" name="locale" id="locale" formControlName="locale" required>
+            <option value="" disabled selected>Seleccione a sua linguagem</option>
+            <option value="pt_PT">Português</option>
+            <option value="en_US">English</option>
+          </select>
+          <div *ngIf="locale.invalid && (locale.dirty || locale.touched || f.submitted)" class="alert alert-danger">
+            <div *ngIf="country.errors?.['required']">Seleccionar a linguagem é obrigatório</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="isActive">Conta Activa?</label>
+          <input type="checkbox" id="isActive" formControlName="isActive">
+        </div>
+        <div class="form-group">
+          <button [disabled]="isLoading" class="btn btn-primary btn-block">Actualizar Detalhes</button>
+        </div>
+      </form>
+      <div class="text-center">
+        <button [disabled]="isLoading" class="btn btn-danger" (click)="delete()">Eliminar Perfil</button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 offset-sm-3">
+      <div class="text-center">
+        <form [formGroup]="imageForm" (ngSubmit)="changePicture()" #fi="ngForm">
+          <div class="form-group">
+            <label for="image">Imagem</label>
+            <input formControlName="image" id="image" type="file" class="form-control"
+              accept="image/png, image/gif, image/jpeg" (change)="onFileChange($event)">
+            <div *ngIf="image.invalid && (fi.submitted || image.touched)" class="alert alert-danger">
+              <div *ngIf="image.errors?.['required']">Precisa de seleccionar uma imagem.</div>
+            </div>
+            <button [disabled]="isLoading" class="btn btn-success">{{user.photo ? "Actualizar Imagem" : "Inserir Imagem"}}</button>
+          </div>
+        </form>
+        <button *ngIf="user.photo!=null" class="btn btn-danger" (click)="deletePicture()">Remover Imagem de
+          Perfil
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Proibir {{userName}} do Grupo</h2>
+
+
+<mat-dialog-content [formGroup]="banReasonForm">
+  <mat-form-field>
+    <input matInput
+           formControlName="banReason">
+    <mat-hint>Razão da Proibição</mat-hint>
+    <mat-error *ngIf="banReason.invalid">A razão de proibição é obrigatória.</mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput [matDatepicker]="myDatepicker" [min]="minimumBanDate"
+           formControlName="banUntil">
+    <mat-datepicker-toggle matSuffix
+                           [for]="myDatepicker">
+    </mat-datepicker-toggle>
+    <mat-datepicker #myDatepicker></mat-datepicker>
+    <mat-hint>Data da Expiração da Proibição (Opcional)</mat-hint>
+  </mat-form-field>
+  <mat-checkbox formControlName="hidePosts">Eliminar Todas as Publicações?</mat-checkbox>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="mat-raised-button"
+          (click)="close()">
+    Fechar
+  </button>
+
+  <button class="mat-raised-button mat-primary"
+          (click)="save()">
+    Proibir
+  </button>
+
+</mat-dialog-actions>
