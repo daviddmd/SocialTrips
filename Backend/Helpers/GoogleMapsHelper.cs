@@ -22,7 +22,6 @@ namespace BackendAPI.Helpers
 {
     public class GoogleMapsHelper : IGoogleMapsHelper
     {
-        //private static string ApiKey = "AIzaSyCLI9vy4uuOSn2HrTxSWL5Rb6rB8vfY8Vc";
         private readonly IConfiguration _configuration;
         private readonly string ApiKey;
         public GoogleMapsHelper(IConfiguration configuration)

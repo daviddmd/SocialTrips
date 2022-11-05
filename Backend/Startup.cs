@@ -48,7 +48,7 @@ namespace BackendAPI
             services.AddScoped<IGoogleCloudStorageHelper, GoogleCloudStorageHelper>();
             services.AddScoped<IEmailHelper, EmailHelper>();
             services.AddIdentity<User, IdentityRole>(options => { 
-                options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedEmail = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.Lockout.AllowedForNewUsers = true;
@@ -112,7 +112,7 @@ namespace BackendAPI
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Backend v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Social Trips"));
             }
             app.UseCors(x => x
                 .AllowAnyOrigin()

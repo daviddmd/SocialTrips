@@ -139,18 +139,21 @@ namespace BackendAPI.Controllers
             {
                 await userManager.AddToRoleAsync(user, Enum.GetName(UserRole.ADMIN));
             }
-            String EmailConfirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            string EmailConfirmationLink = _emailHelper.GetEmailConfirmationLink(user.Id, EmailConfirmationToken);
-            string body = $@"
-            <h3>Bem Vindo à Plataforma das Viagens Sociais!</h3><br>
-            <p>Estamos muito gratos pelo teu registo e não podemos esperar pelas tuas contribuições para a nossa grande comunidade de viajantes!</p>
-            <p>Para completar o teu registo, por favor, clica <a href='{EmailConfirmationLink}'>neste link</a> ou acede ao link abaixo e começa já a viajar!</p>
-            <p>{EmailConfirmationLink}</p>
-            <p>Estamos à tua espera!</p>";
-            bool MailResult = await _emailHelper.SendEmail("Bem-Vindo à Plataforma das Viagens Sociais!", body, user.Email);
-            if (!MailResult)
+            if (userManager.Options.SignIn.RequireConfirmedAccount)
             {
-                return BadRequest(new ErrorModel() { ErrorType = ErrorType.EMAIL_ERROR, Message = "The e-mail couldn't be delivered" });
+                String EmailConfirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                string EmailConfirmationLink = _emailHelper.GetEmailConfirmationLink(user.Id, EmailConfirmationToken);
+                string body = $@"
+                <h3>Bem Vindo à Plataforma das Viagens Sociais!</h3><br>
+                <p>Estamos muito gratos pelo teu registo e não podemos esperar pelas tuas contribuições para a nossa grande comunidade de viajantes!</p>
+                <p>Para completar o teu registo, por favor, clica <a href='{EmailConfirmationLink}'>neste link</a> ou acede ao link abaixo e começa já a viajar!</p>
+                <p>{EmailConfirmationLink}</p>
+                <p>Estamos à tua espera!</p>";
+                bool MailResult = await _emailHelper.SendEmail("Bem-Vindo à Plataforma das Viagens Sociais!", body, user.Email);
+                if (!MailResult)
+                {
+                    return BadRequest(new ErrorModel() { ErrorType = ErrorType.EMAIL_ERROR, Message = "The e-mail couldn't be delivered" });
+                }
             }
             return Ok();
         }
