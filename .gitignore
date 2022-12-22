@@ -387,4 +387,8 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 
-appsettings.json
+Frontend/src/environments/environment.ts
+
+Frontend/src/environments/environment.prod.ts
+
+Backend/appsettings.json
