@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using GoogleApi.Entities.Maps.DistanceMatrix.Response;
 using GoogleApi.Entities.Places.Details.Response;
 using BackendAPI.Exceptions;
+using Ganss.Xss;
 
 namespace BackendAPI.Helpers
 {
@@ -60,6 +61,7 @@ namespace BackendAPI.Helpers
 
         public async Task<IEnumerable<ActivityTransportModel>> GetAllTransporationMethods(ActivitySearchTransportModel model)
         {
+            var sanitizer = new HtmlSanitizer();
             DateTime departTime = model.DepartTime < DateTime.Now ? DateTime.Now : model.DepartTime;
             List<ActivityTransportModel> result = new();
             Place origin = new(model.OriginPlaceId);
@@ -87,20 +89,22 @@ namespace BackendAPI.Helpers
                     continue;
                 }
                 Leg leg = route.Legs.First();
-                string Description = "<ol>";
+                string Description = "<ol>\n";
                 //construir lista de passos para a descrição do transporte
                 foreach (Step step in leg.Steps)
                 {
                     if (step.TransitDetails != null)
                     {
-                        Description += $"<li>{step.HtmlInstructions} ({step.TransitDetails.Lines.Name} - {step.TransitDetails.Lines.ShortName})</li>";
+                        Description += $"<li>{step.HtmlInstructions}: <b>{step.TransitDetails.DepartureStop.Name}</b>-><b>{step.TransitDetails.ArrivalStop.Name}</b> ({step.TransitDetails.Lines.ShortName})</li>\n";
                     }
                     else
                     {
-                        Description += $"<li>{step.HtmlInstructions}</li>";
+                        Description += $"<li>{step.HtmlInstructions}</li>\n";
                     }
                 }
-                Description += "</ol>";
+                Description += "</ol>\n";
+                sanitizer.AllowedCssProperties.Clear();
+                Description = sanitizer.Sanitize(Description);
                 DateTime DepartureTime = departTime;
                 DateTime ArrivalTime = DepartureTime.AddSeconds(leg.Duration.Value);
                 if (travelMode == TravelMode.Transit && leg.DepartureTime!=null)
