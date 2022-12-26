@@ -1,6 +1,4 @@
-﻿using BackendAPI.Models.Attachment;
-using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BackendAPI.Models.User
 {

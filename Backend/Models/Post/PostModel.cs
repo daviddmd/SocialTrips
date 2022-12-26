@@ -16,7 +16,7 @@ namespace BackendAPI.Models.Post
         public int Id { get; set; }
         public string Description { get; set; }
         public UserModelSimple User { get; set; }
-        public TripModelSimple Trip{ get; set; }
+        public TripModelSimple Trip { get; set; }
         public DateTime Date { get; set; }
         public DateTime PublishedDate { get; set; }
         public List<AttachmentModel> Attachments { get; set; }

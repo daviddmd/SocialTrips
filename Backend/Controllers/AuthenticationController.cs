@@ -83,7 +83,7 @@ namespace BackendAPI.Controllers
                 }
             }
             Ranking ranking = await rankingRepository.GetDefaultRanking();
-            if (ranking==null)
+            if (ranking == null)
             {
                 ranking = await rankingRepository.CreateDefaultRanking();
             }
@@ -113,7 +113,8 @@ namespace BackendAPI.Controllers
                 return BadRequest(new ErrorModel() { ErrorType = ErrorType.INVALID_COUNTRY_CODE, Message = "A country with this code doesn't exist" });
             }
             int NumberUsers = await userManager.Users.CountAsync();
-            User user = new() {
+            User user = new()
+            {
                 Email = model.Email,
                 UserName = model.UserName,
                 Name = model.Name,
@@ -125,9 +126,9 @@ namespace BackendAPI.Controllers
                 Locale = model.Locale,
                 CreationDate = DateTime.Now,
                 IsActive = true,
-                Facebook="",
-                Twitter="",
-                Instagram=""
+                Facebook = "",
+                Twitter = "",
+                Instagram = ""
             };
             IdentityResult result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -211,7 +212,8 @@ namespace BackendAPI.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
-            foreach (string userRole in userRoles){
+            foreach (string userRole in userRoles)
+            {
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
             SymmetricSecurityKey authSigningKey = new(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));

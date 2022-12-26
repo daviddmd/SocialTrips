@@ -39,7 +39,7 @@ namespace BackendAPI.Repositories
         }
         public async Task AddUser(Group group, User user, Guid? InviteId, bool IsManager)
         {
-            GroupBan ban = await _context.GroupBans.Where(gb=>gb.User == user && gb.Group == group).FirstOrDefaultAsync();
+            GroupBan ban = await _context.GroupBans.Where(gb => gb.User == user && gb.Group == group).FirstOrDefaultAsync();
             if (ban != null)
             {
                 //unban user and continue join process
@@ -79,9 +79,9 @@ namespace BackendAPI.Repositories
             UserGroup userGroup = await GetUserGroup(group, user);
             if (userGroup == null)
             {
-                int NumberMembersGroup = await _context.UserGroups.CountAsync(ug=>ug.Group.Id==group.Id);
+                int NumberMembersGroup = await _context.UserGroups.CountAsync(ug => ug.Group.Id == group.Id);
                 //caso não hajam gestores no grupo, o primeiro a entrar será gestor. Administrador apesar de ter role de regular será sempre administrador e pode chamar os endpoints com permissões.
-                UserGroup userGroupCreate =  new(){ User = user, Group=group, EntranceDate = DateTime.Now, Role= NumberMembersGroup==0?UserGroupRole.MANAGER:UserGroupRole.REGULAR};
+                UserGroup userGroupCreate = new() { User = user, Group = group, EntranceDate = DateTime.Now, Role = NumberMembersGroup == 0 ? UserGroupRole.MANAGER : UserGroupRole.REGULAR };
                 _context.UserGroups.Add(userGroupCreate);
                 await _context.SaveChangesAsync();
                 group.HasExperiencedUser = await GroupHasExperiencedMember(group);
@@ -131,7 +131,7 @@ namespace BackendAPI.Repositories
             group.Users.Clear();
             group.Invites.Clear();
             //Remover todos os utilizadores e convites das viagens e esconder todos os posts desta
-            foreach(Trip trip in group.Trips)
+            foreach (Trip trip in group.Trips)
             {
                 trip.Users.Clear();
                 trip.Invites.Clear();
@@ -172,7 +172,7 @@ namespace BackendAPI.Repositories
         public async Task InviteUser(GroupInvite groupInvite)
         {
             //novos convites apenas podem ser enviados se os anteriores tiverem sido consumidos. isto irá procurar por um convite existente
-            if (_context.GroupInvites.Any(gi=>gi.User.Id==groupInvite.User.Id && gi.Group.Id == groupInvite.Group.Id))
+            if (_context.GroupInvites.Any(gi => gi.User.Id == groupInvite.User.Id && gi.Group.Id == groupInvite.Group.Id))
             {
                 throw new CustomException("User was already invited", ErrorType.GROUP_USER_ALREADY_INVITED);
             }
@@ -192,7 +192,7 @@ namespace BackendAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<UserGroupRole> GetUserRole(Group group,User user)
+        public async Task<UserGroupRole> GetUserRole(Group group, User user)
         {
             UserGroup ug = await GetUserGroup(group, user);
             if (ug == null)
@@ -208,9 +208,9 @@ namespace BackendAPI.Repositories
             UserGroup userGroup = await GetUserGroup(group, user);
             if (userGroup != null)
             {
-                int NumberManagers = await _context.UserGroups.Where(ug=>ug.Role==UserGroupRole.MANAGER && ug.Group.Id == group.Id).CountAsync();
+                int NumberManagers = await _context.UserGroups.Where(ug => ug.Role == UserGroupRole.MANAGER && ug.Group.Id == group.Id).CountAsync();
                 //um gestor não se pode demover a ele próprio, apenas a outros, logo vai haver sempre pelo menos 1
-                if (NumberManagers == 1 && userGroup.Role==UserGroupRole.MANAGER)
+                if (NumberManagers == 1 && userGroup.Role == UserGroupRole.MANAGER)
                 {
                     throw new CustomException("Group only has one manager left.", ErrorType.GROUP_LAST_MANAGER_LEAVE);
                 }
@@ -348,12 +348,12 @@ namespace BackendAPI.Repositories
             _context.UserTrips.RemoveRange(user.Trips.Where(ut => ut.Trip.Group == group && ut.User == user));
             _context.GroupInvites.RemoveRange(user.GroupInvites.Where(gi => gi.Group == group && gi.User == user));
             _context.TripInvites.RemoveRange(user.TripInvites.Where(ut => ut.User == user && ut.Trip.Group == group));
-            _context.GroupBans.Add(new GroupBan() { Group=group,User=user,BanReason= BanReason , BanUntil=BanUntil, BanDate = DateTime.Now});
+            _context.GroupBans.Add(new GroupBan() { Group = group, User = user, BanReason = BanReason, BanUntil = BanUntil, BanDate = DateTime.Now });
             if (HidePosts)
             {
-                foreach(Trip trip in group.Trips)
+                foreach (Trip trip in group.Trips)
                 {
-                    foreach(Post post in trip.Posts)
+                    foreach (Post post in trip.Posts)
                     {
                         if (post.User == user)
                         {
@@ -376,7 +376,7 @@ namespace BackendAPI.Repositories
         public async Task UnbanUser(Group group, User user)
         {
             GroupBan ban = await _context.GroupBans.Where(gb => gb.Group == group && gb.User == user).FirstOrDefaultAsync();
-            if (ban==null)
+            if (ban == null)
             {
                 throw new CustomException("This user isn't banned", ErrorType.GROUP_USER_NOT_BANNED);
             }
@@ -394,7 +394,7 @@ namespace BackendAPI.Repositories
 
         public async Task<GroupBan> GetBanById(int Id)
         {
-            return await _context.GroupBans.Where(gb=>gb.Id == Id).FirstOrDefaultAsync();
+            return await _context.GroupBans.Where(gb => gb.Id == Id).FirstOrDefaultAsync();
         }
 
         public async Task RemoveImage(Group group)

@@ -248,7 +248,7 @@ namespace BackendAPI.Controllers
             {
                 await _activityRepository.UpdateActivity(activity, model);
                 await _tripRepository.RecalculateTripDistanceAndBudget(trip);
-                return Ok(_mapper.Map<Trip,TripModelAdmin>(trip));
+                return Ok(_mapper.Map<Trip, TripModelAdmin>(trip));
             }
             catch (CustomException exception)
             {

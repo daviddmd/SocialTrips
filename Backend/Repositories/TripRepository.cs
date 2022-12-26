@@ -33,8 +33,8 @@ namespace BackendAPI.Repositories
         public async Task RecalculateTripDistanceAndBudget(Trip trip)
         {
             double distance = 0;
-            double budget = _context.Activities.Where(a=>a.Trip.Id==trip.Id).Sum(a=>a.ExpectedBudget);
-            List<Activity> Activities = trip.Activities.Where(t => t.ActivityType != ActivityType.TRANSPORT).OrderBy(i=>i.Id).ToList();
+            double budget = _context.Activities.Where(a => a.Trip.Id == trip.Id).Sum(a => a.ExpectedBudget);
+            List<Activity> Activities = trip.Activities.Where(t => t.ActivityType != ActivityType.TRANSPORT).OrderBy(i => i.Id).ToList();
             for (int i = 0; i < Activities.Count - 1; i++)
             {
                 distance += GeoCalculator.GetDistance(
@@ -57,7 +57,7 @@ namespace BackendAPI.Repositories
         private async Task UpdateUsersRankingsAndDistance(Trip trip)
         {
             List<Ranking> ranking_list = await _context.Rankings.OrderByDescending(cr => cr.MinimumKilometers).ToListAsync();
-            foreach (User user in trip.Users.Select(t=>t.User))
+            foreach (User user in trip.Users.Select(t => t.User))
             {
                 user.TravelledKilometers += trip.TotalDistance;
                 foreach (Ranking r in ranking_list)
@@ -77,8 +77,8 @@ namespace BackendAPI.Repositories
         private async Task UpdateAverageCostAndDistanceTripGroup(Group group)
         {
             int NumberTripsCompleted = group.Trips.Count(t => t.IsCompleted);
-            double TotalCostTripsCompleted = group.Trips.Where(t=>t.IsCompleted).Sum(t => t.ExpectedBudget);
-            double TotalDistanceTripsCompleted = group.Trips.Where(t=>t.IsCompleted).Sum(t => t.TotalDistance);
+            double TotalCostTripsCompleted = group.Trips.Where(t => t.IsCompleted).Sum(t => t.ExpectedBudget);
+            double TotalDistanceTripsCompleted = group.Trips.Where(t => t.IsCompleted).Sum(t => t.TotalDistance);
             if (NumberTripsCompleted == 0)
             {
                 group.AverageTripCost = 0;
@@ -86,8 +86,8 @@ namespace BackendAPI.Repositories
             }
             else
             {
-                group.AverageTripCost = (double) (TotalCostTripsCompleted / NumberTripsCompleted);
-                group.AverageTripDistance = (double) (TotalDistanceTripsCompleted / NumberTripsCompleted);
+                group.AverageTripCost = (double)(TotalCostTripsCompleted / NumberTripsCompleted);
+                group.AverageTripDistance = (double)(TotalDistanceTripsCompleted / NumberTripsCompleted);
             }
 
             _context.Groups.Update(group);
@@ -135,7 +135,7 @@ namespace BackendAPI.Repositories
              * Temos que verificar se ao alterar a data de início ou de fim, estamos a deixar actividades existentes para trás. Exemplo:
              * Puxar a atividade de início para a frente se já existirem algumas atrás, ou a de fim para trás
              */
-            if(_context.Activities.Any(a=>a.Trip.Id == trip.Id && (a.BeginningDate < model.BeginningDate || a.EndingDate > model.EndingDate)))
+            if (_context.Activities.Any(a => a.Trip.Id == trip.Id && (a.BeginningDate < model.BeginningDate || a.EndingDate > model.EndingDate)))
             {
                 throw new CustomException("Activities already exist before the beginning date or after the ending date", ErrorType.TRIP_DATE_EXISTING_ACTIVITIES);
             }
@@ -143,7 +143,7 @@ namespace BackendAPI.Repositories
             if (
                 (model.BeginningDate.Date != trip.BeginningDate.Date || model.EndingDate.Date != trip.EndingDate.Date) &&
                 (model.BeginningDate.Date < DateTime.Now.Date || model.EndingDate.Date < DateTime.Now.Date || model.BeginningDate > model.EndingDate) &&
-                !(model.IsCompleted||trip.IsCompleted)
+                !(model.IsCompleted || trip.IsCompleted)
                 )
             {
                 throw new CustomException("The beginning date of the trip must be in the future and the beginning date must be before the ending date", ErrorType.TRIP_DATE_INVALID);
@@ -198,7 +198,7 @@ namespace BackendAPI.Repositories
 
             }
             //é possível juntar-se a um grupo ou viagem que não seja privado com convite
-            if (invite!=null)
+            if (invite != null)
             {
                 WasInvited = true;
                 _context.TripInvites.Remove(invite);
@@ -270,7 +270,7 @@ namespace BackendAPI.Repositories
             {
                 throw new CustomException("This user is already on this trip", ErrorType.TRIP_USER_ALREADY_PRESENT);
             }
-            if (!(_context.UserGroups.Any(g => g.User.Id == tripInvite.User.Id && g.Group.Id==tripInvite.Trip.Group.Id)))
+            if (!(_context.UserGroups.Any(g => g.User.Id == tripInvite.User.Id && g.Group.Id == tripInvite.Trip.Group.Id)))
             {
                 throw new CustomException("This user cannot join this trip because he doesn't belong to the group.", ErrorType.TRIP_USER_NOT_PRESENT_GROUP);
             }
@@ -288,7 +288,7 @@ namespace BackendAPI.Repositories
 
         public async Task<IEnumerable<Trip>> Search(TripSearchModel model)
         {
-            if (model.TripDestination == ""  && model.TripDescription == "" && model.TripName == "")
+            if (model.TripDestination == "" && model.TripDescription == "" && model.TripName == "")
             {
                 return new List<Trip>();
             }
@@ -296,8 +296,8 @@ namespace BackendAPI.Repositories
             !trip.IsCompleted &&
             (
             (model.TripName != "" && trip.Name.ToLower().Contains(model.TripName.ToLower())) ||
-            (model.TripDescription!="" && trip.Description.ToLower().Contains(model.TripDescription.ToLower())) ||
-            (model.TripDestination!="" && trip.Activities.Any(a => a.RealAddress.ToLower().Contains(model.TripDestination.ToLower()) || a.Description.ToLower().Contains(model.TripDestination.ToLower())))
+            (model.TripDescription != "" && trip.Description.ToLower().Contains(model.TripDescription.ToLower())) ||
+            (model.TripDestination != "" && trip.Activities.Any(a => a.RealAddress.ToLower().Contains(model.TripDestination.ToLower()) || a.Description.ToLower().Contains(model.TripDestination.ToLower())))
             )
             ).ToListAsync();
         }

@@ -1,18 +1,18 @@
-﻿using System;
+﻿using AutoMapper;
+using BackendAPI.Entities;
+using BackendAPI.Entities.Enums;
+using BackendAPI.Exceptions;
+using BackendAPI.Models;
+using BackendAPI.Models.User;
+using BackendAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using BackendAPI.Entities;
-using BackendAPI.Models.User;
-using AutoMapper;
-using BackendAPI.Repositories;
-using Microsoft.AspNetCore.Authorization;
-using BackendAPI.Entities.Enums;
-using Microsoft.AspNetCore.Identity;
-using BackendAPI.Exceptions;
-using BackendAPI.Models;
 
 namespace BackendAPI.Controllers
 {
@@ -45,7 +45,7 @@ namespace BackendAPI.Controllers
         public async Task<ActionResult<IEnumerable<UserModel>>> GetAllUsers()
         {
             IEnumerable<User> users = await _repository.GetAll();
-            IEnumerable<UserModelSelf> users_ret = from user in users select _mapper.Map<User,UserModelSelf>(user);
+            IEnumerable<UserModelSelf> users_ret = from user in users select _mapper.Map<User, UserModelSelf>(user);
             return Ok(users_ret);
         }
         /// <summary>
@@ -97,11 +97,11 @@ namespace BackendAPI.Controllers
                 !(ug.Group.IsPrivate &&
                 !current_user.Groups.Any(gg => gg.Group.Id == ug.Group.Id))).ToList();
                 //Esconder Trips e Posts de Trips que estejam escondidas e o utilizador não pertença à mesma, ou que pertençam a grupos privados que o utilizador actual não esteja presente
-                user.Trips = user.Trips.Where(ut => 
-                !(ut.Trip.IsPrivate && !current_user.Trips.Any(cut=>cut.Trip.Id == ut.Trip.Id)) && 
+                user.Trips = user.Trips.Where(ut =>
+                !(ut.Trip.IsPrivate && !current_user.Trips.Any(cut => cut.Trip.Id == ut.Trip.Id)) &&
                 !(ut.Trip.Group.IsPrivate && !current_user.Groups.Any(gg => gg.Group.Id == ut.Trip.Group.Id))).ToList();
-                user.Posts = user.Posts.Where(up => 
-                !(up.Trip.IsPrivate && !current_user.Trips.Any(cut => cut.Trip.Id == up.Trip.Id)) && 
+                user.Posts = user.Posts.Where(up =>
+                !(up.Trip.IsPrivate && !current_user.Trips.Any(cut => cut.Trip.Id == up.Trip.Id)) &&
                 !(up.Trip.Group.IsPrivate && !current_user.Groups.Any(gg => gg.Group.Id == up.Trip.Group.Id)) &&
                 !up.IsHidden).ToList();
                 user.Following = user.Following.Where(f => f.IsActive).ToList();
@@ -338,7 +338,7 @@ namespace BackendAPI.Controllers
         /// <returns></returns>
         /// <response code="200">Remoção do Utilizador do Sistema bem-sucedida</response>
         /// <response code="404">Não existe um utilizador no sistema com este ID</response>
-        [Authorize(Roles ="ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(String Id)
         {

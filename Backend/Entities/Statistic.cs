@@ -1,12 +1,11 @@
 ﻿using BackendAPI.Entities.Enums;
-using System;
 using System.Collections.Generic;
 
 namespace BackendAPI.Entities
 {
     public class Statistic
     {
-        public Dictionary<string,int> MostVisitedPlaces { get; set; }
+        public Dictionary<string, int> MostVisitedPlaces { get; set; }
         public Dictionary<string, double> TripsByTotalDistance { get; set; }
         public Dictionary<string, double> TripsByTotalCost { get; set; }
         public Dictionary<string, int> TripsByNumberUsers { get; set; }

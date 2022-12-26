@@ -1,7 +1,4 @@
-﻿using BackendAPI.Entities;
-using BackendAPI.Models.Attachment;
-using BackendAPI.Models.Trip;
-using BackendAPI.Models.User;
+﻿using BackendAPI.Models.Trip;
 using System;
 using System.Collections.Generic;
 

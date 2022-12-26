@@ -1,5 +1,5 @@
-﻿using System;
-using BackendAPI.Entities.Enums;
+﻿using BackendAPI.Entities.Enums;
+using System;
 namespace BackendAPI.Entities
 {
     public class Activity

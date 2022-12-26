@@ -38,11 +38,11 @@ namespace BackendAPI.Helpers
             string EmailConfirmationTokenEncoded = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(EmailConfirmationToken));
             return $"{_domain}/confirm-email/{UserId}/{EmailConfirmationTokenEncoded}";
         }
-        public async Task<bool> SendEmail(string Subject, string Body,string Destination)
+        public async Task<bool> SendEmail(string Subject, string Body, string Destination)
         {
             Body += _footer;
             TransactionalEmail email = new TransactionalEmailBuilder()
-                .WithFrom(new SendContact(_email,"Viagens Sociais"))
+                .WithFrom(new SendContact(_email, "Viagens Sociais"))
                 .WithSubject(Subject)
                 .WithHtmlPart(Body)
                 .WithTo(new SendContact(Destination))
@@ -50,14 +50,14 @@ namespace BackendAPI.Helpers
             TransactionalEmailResponse response = await _mailjetClient.SendTransactionalEmailAsync(email);
             return (response.Messages.Length == 1 && response.Messages[0].Status == "success");
         }
-        public async Task<(int,int)> SendEmailToMultiple(string Subject, string Body,List<string> Destinations)
+        public async Task<(int, int)> SendEmailToMultiple(string Subject, string Body, List<string> Destinations)
         {
             Body += _footer;
             int NumberMessagesDelivered = 0;
             int NumberMessagesNonDelivered = 0;
             IEnumerable<SendContact> SendContacts = from contact in Destinations select new SendContact(contact);
             TransactionalEmail email = new TransactionalEmailBuilder()
-                .WithFrom(new SendContact(_bulkEmail,"Viagens Sociais"))
+                .WithFrom(new SendContact(_bulkEmail, "Viagens Sociais"))
                 .WithSubject(Subject)
                 .WithHtmlPart(Body)
                 .WithTo(SendContacts)

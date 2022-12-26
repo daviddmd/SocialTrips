@@ -52,9 +52,9 @@ namespace BackendAPI.Repositories
             user.Following.Clear();
             user.Groups.Clear();
             user.Trips.Clear();
-            foreach(Post post in user.Posts)
+            foreach (Post post in user.Posts)
             {
-                foreach(Attachment attachment in post.Attachments)
+                foreach (Attachment attachment in post.Attachments)
                 {
                     await _storageHelper.Delete(attachment.StorageName);
                 }
@@ -91,9 +91,9 @@ namespace BackendAPI.Repositories
             {
                 return new List<User>();
             }
-            return await userManager.Users.Where(user => 
+            return await userManager.Users.Where(user =>
             user.Name.ToLower().Contains(userSearch.NameOrEmail.ToLower()) ||
-            user.Email.ToLower() == userSearch.NameOrEmail.ToLower() || 
+            user.Email.ToLower() == userSearch.NameOrEmail.ToLower() ||
             user.UserName.ToLower().Contains(userSearch.NameOrEmail.ToLower())
             ).ToListAsync();
         }
@@ -179,7 +179,7 @@ namespace BackendAPI.Repositories
 
         public async Task UpdateUserRoles(User user, List<UserRole> roles)
         {
-            foreach(UserRole role in roles)
+            foreach (UserRole role in roles)
             {
                 if (!Enum.IsDefined(role))
                 {

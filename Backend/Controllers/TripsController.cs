@@ -1,19 +1,19 @@
-﻿using System;
+﻿using AutoMapper;
+using BackendAPI.Entities;
+using BackendAPI.Entities.Enums;
+using BackendAPI.Exceptions;
+using BackendAPI.Models;
+using BackendAPI.Models.Trip;
+using BackendAPI.Repositories;
+using GoogleApi.Entities.Maps.Directions.Response;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using BackendAPI.Entities;
-using AutoMapper;
-using BackendAPI.Repositories;
-using BackendAPI.Models.Trip;
-using Microsoft.AspNetCore.Identity;
-using BackendAPI.Entities.Enums;
-using Microsoft.AspNetCore.Authorization;
-using GoogleApi.Entities.Maps.Directions.Response;
-using Microsoft.AspNetCore.Http;
-using BackendAPI.Models;
-using BackendAPI.Exceptions;
 
 namespace BackendAPI.Controllers
 {
@@ -69,7 +69,7 @@ namespace BackendAPI.Controllers
             try
             {
                 await _repository.Create(trip, group);
-                await _repository.AddUser(trip,current_user,null,true);
+                await _repository.AddUser(trip, current_user, null, true);
                 return Ok(_mapper.Map<Trip, TripModelAdmin>(trip)); //redireciona depois baseado no ID
             }
             catch (CustomException exception)
@@ -106,7 +106,7 @@ namespace BackendAPI.Controllers
             bool is_admin = user_roles.Contains(Enum.GetName(UserRole.ADMIN));
             if (!is_admin)
             {
-                trips = trips.Where(t => 
+                trips = trips.Where(t =>
                 !(t.Group.IsPrivate && !user.Groups.Any(ug => ug.Group.Id == t.Group.Id)) &&
                 !(t.IsPrivate && !user.Trips.Any(ut => ut.Trip.Id == t.Id))).ToList();
                 IEnumerable<TripModelSimple> tripsList = from trip in trips select _mapper.Map<Trip, TripModelSimple>(trip);
@@ -207,7 +207,7 @@ namespace BackendAPI.Controllers
             }
             try
             {
-                await _repository.AddUser(trip, user,model.InviteId, (is_admin|| IsManager));
+                await _repository.AddUser(trip, user, model.InviteId, (is_admin || IsManager));
                 return Ok();
             }
             catch (CustomException exception)
@@ -283,7 +283,7 @@ namespace BackendAPI.Controllers
             }
             try
             {
-                await _repository.RemoveUser(trip,user_to_remove);
+                await _repository.RemoveUser(trip, user_to_remove);
                 return Ok();
             }
             catch (CustomException exception)

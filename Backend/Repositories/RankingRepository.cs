@@ -23,7 +23,7 @@ namespace BackendAPI.Repositories
             foreach (User user in _context.Users)
             {
                 double kilometers = user.TravelledKilometers;
-                foreach(Ranking r in ranking_list)
+                foreach (Ranking r in ranking_list)
                 {
                     if (kilometers >= r.MinimumKilometers)
                     {
@@ -38,9 +38,9 @@ namespace BackendAPI.Repositories
         }
         public async Task Create(Ranking ranking)
         {
-            
+
             //não se pode criar um ranking com o mesmo número de quilómetros que outro
-            if (await _context.Rankings.AnyAsync(r=>r.MinimumKilometers == ranking.MinimumKilometers))
+            if (await _context.Rankings.AnyAsync(r => r.MinimumKilometers == ranking.MinimumKilometers))
             {
                 throw new CustomException(ErrorType.RANKING_EXISTS);
             }
@@ -55,7 +55,7 @@ namespace BackendAPI.Repositories
 
         public async Task Delete(Ranking ranking)
         {
-            if (ranking.MinimumKilometers == 0 || await _context.Rankings.CountAsync()==1)
+            if (ranking.MinimumKilometers == 0 || await _context.Rankings.CountAsync() == 1)
             {
                 throw new CustomException(ErrorType.RANKING_DEFAULT_DELETE);
             }
@@ -95,7 +95,7 @@ namespace BackendAPI.Repositories
 
         public async Task<Ranking> GetDefaultRanking()
         {
-            return await _context.Rankings.Where(r=>r.MinimumKilometers==0).FirstOrDefaultAsync();
+            return await _context.Rankings.Where(r => r.MinimumKilometers == 0).FirstOrDefaultAsync();
         }
 
         public async Task<Ranking> CreateDefaultRanking()

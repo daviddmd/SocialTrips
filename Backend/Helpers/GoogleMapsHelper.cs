@@ -1,23 +1,23 @@
 ﻿using BackendAPI.Entities.Enums;
+using BackendAPI.Exceptions;
 using BackendAPI.Models.Activity;
+using Ganss.Xss;
+using Geolocation;
 using GoogleApi;
+using GoogleApi.Entities.Common.Enums.Extensions;
 using GoogleApi.Entities.Maps.Common;
 using GoogleApi.Entities.Maps.Common.Enums;
 using GoogleApi.Entities.Maps.Directions.Request;
 using GoogleApi.Entities.Maps.Directions.Response;
-using GoogleApi.Entities.Common.Enums.Extensions;
+using GoogleApi.Entities.Maps.DistanceMatrix.Request;
+using GoogleApi.Entities.Maps.DistanceMatrix.Response;
+using GoogleApi.Entities.Places.Details.Request;
+using GoogleApi.Entities.Places.Details.Response;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Geolocation;
-using GoogleApi.Entities.Maps.DistanceMatrix.Request;
-using GoogleApi.Entities.Places.Details.Request;
-using Microsoft.Extensions.Configuration;
-using GoogleApi.Entities.Maps.DistanceMatrix.Response;
-using GoogleApi.Entities.Places.Details.Response;
-using BackendAPI.Exceptions;
-using Ganss.Xss;
 
 namespace BackendAPI.Helpers
 {
@@ -107,7 +107,7 @@ namespace BackendAPI.Helpers
                 Description = sanitizer.Sanitize(Description);
                 DateTime DepartureTime = departTime;
                 DateTime ArrivalTime = DepartureTime.AddSeconds(leg.Duration.Value);
-                if (travelMode == TravelMode.Transit && leg.DepartureTime!=null)
+                if (travelMode == TravelMode.Transit && leg.DepartureTime != null)
                 {
                     DepartureTime = DateTimeOffset.FromUnixTimeSeconds(leg.DepartureTime.Value).DateTime;
                     ArrivalTime = DateTimeOffset.FromUnixTimeSeconds(leg.ArrivalTime.Value).DateTime;
@@ -118,11 +118,11 @@ namespace BackendAPI.Helpers
             return result;
         }
 
-        public async Task<(Coordinate,String,String)> GetCoordinatesAndAddressFromPlaceId(string PlaceId)
+        public async Task<(Coordinate, String, String)> GetCoordinatesAndAddressFromPlaceId(string PlaceId)
         {
             PlacesDetailsRequest request = new PlacesDetailsRequest
             {
-                Key=ApiKey,
+                Key = ApiKey,
                 PlaceId = PlaceId,
             };
             PlacesDetailsResponse response = await GooglePlaces.Details.QueryAsync(request);

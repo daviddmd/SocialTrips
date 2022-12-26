@@ -1,11 +1,11 @@
 ﻿using BackendAPI.Entities;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
-using BackendAPI.Models.User;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http;
 using BackendAPI.Entities.Enums;
+using BackendAPI.Models.User;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BackendAPI.Repositories
 {

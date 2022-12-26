@@ -1,5 +1,4 @@
 ﻿using BackendAPI.Entities.Enums;
-using System;
 using System.Collections.Generic;
 
 namespace BackendAPI.Models.Information

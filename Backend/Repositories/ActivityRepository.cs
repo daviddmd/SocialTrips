@@ -112,7 +112,7 @@ namespace BackendAPI.Repositories
                 transport.Trip = trip;
                 _context.Activities.Add(transport);
             }
-            (Coordinate, String,String) CoordinateAddressName = await _googleMapsHelper.GetCoordinatesAndAddressFromPlaceId(activity.GooglePlaceId);
+            (Coordinate, String, String) CoordinateAddressName = await _googleMapsHelper.GetCoordinatesAndAddressFromPlaceId(activity.GooglePlaceId);
             activity.Latitude = CoordinateAddressName.Item1.Latitude;
             activity.Longitude = CoordinateAddressName.Item1.Longitude;
             activity.Trip = trip;
@@ -132,7 +132,7 @@ namespace BackendAPI.Repositories
 
         public async Task<Activity> GetById(int Id)
         {
-            return await _context.Activities.Where(a=>a.Id == Id).FirstOrDefaultAsync();
+            return await _context.Activities.Where(a => a.Id == Id).FirstOrDefaultAsync();
         }
         public async Task RemoveActivity(Trip trip, Activity activity)
         {
@@ -197,14 +197,14 @@ namespace BackendAPI.Repositories
                 throw new CustomException("The activity to update isn't in the trip date range (the beginning date is lower than the trip beginning date or the ending date is higher than the trip ending date)", ErrorType.ACTIVITY_NOT_IN_TRIP_RANGE);
             }
             //transporte. se for null, significa que é a primeira actividade do dia, logo não é preciso verificar a bound inferior
-            Activity ActivityBefore = await _context.Activities.Where(a=>a.Trip.Id==activity.Trip.Id && a.BeginningDate.Date == ActivityDate && a.EndingDate < activity.BeginningDate).OrderByDescending(a=>a.EndingDate).FirstOrDefaultAsync();
+            Activity ActivityBefore = await _context.Activities.Where(a => a.Trip.Id == activity.Trip.Id && a.BeginningDate.Date == ActivityDate && a.EndingDate < activity.BeginningDate).OrderByDescending(a => a.EndingDate).FirstOrDefaultAsync();
             //transporte. se for null, significa que é a última actividade do dia, logo não é preciso verificar a bound superior
-            Activity ActivityAfter = await _context.Activities.Where(a => a.Trip.Id == activity.Trip.Id && a.BeginningDate.Date == ActivityDate && a.BeginningDate > activity.EndingDate).OrderBy(a=>a.BeginningDate).FirstOrDefaultAsync();
+            Activity ActivityAfter = await _context.Activities.Where(a => a.Trip.Id == activity.Trip.Id && a.BeginningDate.Date == ActivityDate && a.BeginningDate > activity.EndingDate).OrderBy(a => a.BeginningDate).FirstOrDefaultAsync();
             if (ActivityBefore != null && model.BeginningDate < ActivityBefore.EndingDate)
             {
                 throw new CustomException("The new beginning date cannot be lower than the previous activity ending date", ErrorType.ACTIVITY_OVERLAP);
             }
-            if(ActivityAfter != null && model.EndingDate > ActivityAfter.BeginningDate)
+            if (ActivityAfter != null && model.EndingDate > ActivityAfter.BeginningDate)
             {
                 throw new CustomException("The new ending date cannot be lower than the next activity beginning date", ErrorType.ACTIVITY_OVERLAP);
             }

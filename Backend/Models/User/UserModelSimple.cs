@@ -1,6 +1,4 @@
-﻿using BackendAPI.Entities;
-using BackendAPI.Models.Attachment;
-using BackendAPI.Models.Ranking;
+﻿using BackendAPI.Models.Ranking;
 using System;
 
 namespace BackendAPI.Models.User

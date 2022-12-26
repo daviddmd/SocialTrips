@@ -9,6 +9,6 @@ namespace BackendAPI.Models.User
         [Required]
         public string PasswordResetToken { get; set; }
         [Required]
-        public string NewPassword {get; set; }
+        public string NewPassword { get; set; }
     }
 }

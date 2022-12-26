@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using BackendAPI.Entities;
-using BackendAPI.Models.Group;
-using BackendAPI.Models.User;
-using BackendAPI.Models.Trip;
-using BackendAPI.Models.Ranking;
 using BackendAPI.Models.Activity;
 using BackendAPI.Models.Attachment;
-using BackendAPI.Models.Post;
+using BackendAPI.Models.Group;
 using BackendAPI.Models.Information;
-using System.Collections.Generic;
+using BackendAPI.Models.Post;
+using BackendAPI.Models.Ranking;
+using BackendAPI.Models.Trip;
+using BackendAPI.Models.User;
 
 namespace BackendAPI.Data
 {
@@ -44,19 +43,19 @@ namespace BackendAPI.Data
             CreateMap<TripCreateModel, Trip>();
             CreateMap<TripInvite, TripInviteModel>();
             CreateMap<TripInvite, UserTripInviteModel>();
-            CreateMap<UserTripInviteModel,TripInvite>();
+            CreateMap<UserTripInviteModel, TripInvite>();
             CreateMap<Ranking, RankingModel>();
             CreateMap<Ranking, RankingModelAdmin>();
             CreateMap<RankingCreateModel, Ranking>();
             CreateMap<ActivityCreateModelInvidual, Activity>();
-            CreateMap<Activity,ActivityModelSimple>();
+            CreateMap<Activity, ActivityModelSimple>();
             CreateMap<Attachment, AttachmentModel>();
             CreateMap<Post, PostModel>();
             CreateMap<PostCreateModel, Post>();
             CreateMap<Post, PostModel>();
             CreateMap<Post, PostModelTrip>();
             CreateMap<Post, PostModelUser>();
-            CreateMap<GroupEvent,GroupEventModel>();
+            CreateMap<GroupEvent, GroupEventModel>();
             CreateMap<TripEvent, TripEventModel>();
             CreateMap<GroupBan, GroupBanModel>();
             CreateMap<Recommendation, RecommendationModel>();

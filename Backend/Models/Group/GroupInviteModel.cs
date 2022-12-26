@@ -1,5 +1,4 @@
-﻿using BackendAPI.Entities.Enums;
-using BackendAPI.Models.User;
+﻿using BackendAPI.Models.User;
 using System;
 
 namespace BackendAPI.Models.Group

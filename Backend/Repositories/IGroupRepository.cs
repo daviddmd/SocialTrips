@@ -67,7 +67,7 @@ namespace BackendAPI.Repositories
         /// <param name="group">Group to remove an user from</param>
         /// <param name="user">User to be removed from a group</param>
         /// <returns></returns>
-        Task RemoveUser(Group group,User user);
+        Task RemoveUser(Group group, User user);
         /// <summary>
         /// Adds an invite to an user for a group. Fails if an invite was already sent or the user is already in the group.
         /// </summary>

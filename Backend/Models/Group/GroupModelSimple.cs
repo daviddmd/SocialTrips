@@ -1,5 +1,4 @@
-﻿using BackendAPI.Models.Attachment;
-using System;
+﻿using System;
 
 namespace BackendAPI.Models.Group
 {

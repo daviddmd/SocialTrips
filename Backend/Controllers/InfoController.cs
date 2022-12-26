@@ -30,7 +30,7 @@ namespace BackendAPI.Controllers
         {
             User current_user = await _userManager.GetUserAsync(this.User);
             Recommendation recommendation = await _informationRepository.GetRecommendations(current_user);
-            RecommendationModel model = _mapper.Map<Recommendation,RecommendationModel>(recommendation);
+            RecommendationModel model = _mapper.Map<Recommendation, RecommendationModel>(recommendation);
             return Ok(model);
         }
         [Authorize(Roles = "ADMIN")]

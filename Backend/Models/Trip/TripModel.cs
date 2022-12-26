@@ -1,12 +1,8 @@
-﻿using BackendAPI.Entities;
-using BackendAPI.Models.Activity;
-using BackendAPI.Models.Attachment;
+﻿using BackendAPI.Models.Activity;
 using BackendAPI.Models.Group;
 using BackendAPI.Models.Post;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BackendAPI.Models.Trip
 {

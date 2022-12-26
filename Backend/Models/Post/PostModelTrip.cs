@@ -1,5 +1,4 @@
 ﻿using BackendAPI.Models.Attachment;
-using BackendAPI.Models.Trip;
 using BackendAPI.Models.User;
 using System;
 using System.Collections.Generic;

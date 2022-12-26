@@ -1,7 +1,4 @@
-﻿using BackendAPI.Models.Attachment;
-using Microsoft.AspNetCore.Http;
-
-namespace BackendAPI.Models.Group
+﻿namespace BackendAPI.Models.Group
 {
     public class GroupDetailsUpdateModel
     {

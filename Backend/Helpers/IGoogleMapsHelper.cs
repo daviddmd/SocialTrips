@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using System;
-using Geolocation;
+﻿using BackendAPI.Entities.Enums;
 using BackendAPI.Models.Activity;
+using Geolocation;
+using System;
 using System.Collections.Generic;
-using BackendAPI.Entities.Enums;
+using System.Threading.Tasks;
 
 namespace BackendAPI.Helpers
 {

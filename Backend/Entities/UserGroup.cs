@@ -1,8 +1,5 @@
-﻿using System;
-using BackendAPI.Entities.Enums;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BackendAPI.Entities.Enums;
+using System;
 
 namespace BackendAPI.Entities
 {

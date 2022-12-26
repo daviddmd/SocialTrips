@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System;
-using BackendAPI.Models.Post;
+﻿using BackendAPI.Models.Post;
 using BackendAPI.Models.Ranking;
+using System;
+using System.Collections.Generic;
 
 namespace BackendAPI.Models.User
 {

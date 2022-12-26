@@ -1,23 +1,23 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using BackendAPI.Data;
+using BackendAPI.Entities;
+using BackendAPI.Helpers;
+using BackendAPI.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
-using Microsoft.EntityFrameworkCore;
-using BackendAPI.Data;
-using BackendAPI.Repositories;
-using BackendAPI.Entities;
-using Microsoft.AspNetCore.Identity;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using BackendAPI.Helpers;
-using Microsoft.AspNetCore.HttpOverrides;
-using System.Reflection;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text;
 
 namespace BackendAPI
 {
@@ -46,7 +46,8 @@ namespace BackendAPI
             services.AddScoped<IGoogleMapsHelper, GoogleMapsHelper>();
             services.AddScoped<IGoogleCloudStorageHelper, GoogleCloudStorageHelper>();
             services.AddScoped<IEmailHelper, EmailHelper>();
-            services.AddIdentity<User, IdentityRole>(options => { 
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
                 options.SignIn.RequireConfirmedEmail = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
@@ -61,7 +62,8 @@ namespace BackendAPI
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options => {
+            }).AddJwtBearer(options =>
+            {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters()

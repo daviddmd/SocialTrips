@@ -44,7 +44,7 @@ namespace BackendAPI.Controllers
         public async Task<ActionResult<IEnumerable<PostModel>>> GetAllPosts()
         {
             IEnumerable<Post> posts = await _postRepository.GetAll();
-            IEnumerable<PostModel> posts_ret = from post in posts select _mapper.Map<Post,PostModel>(post);
+            IEnumerable<PostModel> posts_ret = from post in posts select _mapper.Map<Post, PostModel>(post);
             return Ok(posts_ret);
         }
         /// <summary>
@@ -99,8 +99,8 @@ namespace BackendAPI.Controllers
                 return NotFound();
             }
             if (
-                (post.Trip.IsPrivate && !current_user.Trips.Any(cut=>cut.Trip.Id == post.Trip.Id)) ||
-                (post.Trip.Group.IsPrivate && !current_user.Groups.Any(cug=>cug.Group.Id == post.Trip.Group.Id))
+                (post.Trip.IsPrivate && !current_user.Trips.Any(cut => cut.Trip.Id == post.Trip.Id)) ||
+                (post.Trip.Group.IsPrivate && !current_user.Groups.Any(cug => cug.Group.Id == post.Trip.Group.Id))
                 )
             {
                 return NotFound();
@@ -147,9 +147,9 @@ namespace BackendAPI.Controllers
             {
                 return NotFound();
             }
-            if ((await _tripRepository.GetUserTrip(trip,user) == null || await _groupRepository.GetUserGroup(trip.Group,user) == null) && !is_admin)
+            if ((await _tripRepository.GetUserTrip(trip, user) == null || await _groupRepository.GetUserGroup(trip.Group, user) == null) && !is_admin)
             {
-                return BadRequest(new ErrorModel() { ErrorType = ErrorType.POST_USER_NOT_IN_TRIP, Message = "Can't create a post since the user isn't in the trip"});
+                return BadRequest(new ErrorModel() { ErrorType = ErrorType.POST_USER_NOT_IN_TRIP, Message = "Can't create a post since the user isn't in the trip" });
             }
             Post post = _mapper.Map<PostCreateModel, Post>(model);
             post.User = user;
@@ -157,7 +157,7 @@ namespace BackendAPI.Controllers
             try
             {
                 await _postRepository.Create(post);
-                return Ok(_mapper.Map<Post,PostModel>(post));
+                return Ok(_mapper.Map<Post, PostModel>(post));
             }
             catch (CustomException exception)
             {
@@ -206,14 +206,14 @@ namespace BackendAPI.Controllers
             {
                 return NotFound();
             }
-            if (!(role==UserGroupRole.MANAGER || role == UserGroupRole.MODERATOR || is_admin) && current_user != post.User)
+            if (!(role == UserGroupRole.MANAGER || role == UserGroupRole.MODERATOR || is_admin) && current_user != post.User)
             {
                 return Forbid();
             }
             try
             {
                 await _postRepository.Update(post, model);
-                return Ok(_mapper.Map<Post,PostModel>(post));
+                return Ok(_mapper.Map<Post, PostModel>(post));
             }
             catch (CustomException exception)
             {
@@ -318,8 +318,8 @@ namespace BackendAPI.Controllers
             }
             try
             {
-                await _postRepository.AddAttachment(post,file);
-                return Ok(_mapper.Map<Post,PostModel>(post));
+                await _postRepository.AddAttachment(post, file);
+                return Ok(_mapper.Map<Post, PostModel>(post));
             }
             catch (CustomException exception)
             {

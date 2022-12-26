@@ -66,7 +66,7 @@ namespace BackendAPI.Repositories
         public async Task Delete(Post post)
         {
             //Eliminar todos os anexos
-            foreach(Attachment attachment in post.Attachments)
+            foreach (Attachment attachment in post.Attachments)
             {
                 await _storageHelper.Delete(attachment.StorageName);
             }
@@ -101,7 +101,7 @@ namespace BackendAPI.Repositories
 
         public async Task<Attachment> GetAttachmentById(Guid FileId)
         {
-            return await _context.Attachments.Where(p=>p.Id==FileId).FirstOrDefaultAsync();
+            return await _context.Attachments.Where(p => p.Id == FileId).FirstOrDefaultAsync();
         }
     }
 }

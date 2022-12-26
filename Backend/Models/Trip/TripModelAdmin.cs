@@ -1,6 +1,4 @@
-﻿using BackendAPI.Entities;
-using BackendAPI.Models.Activity;
-using BackendAPI.Models.Attachment;
+﻿using BackendAPI.Models.Activity;
 using BackendAPI.Models.Group;
 using BackendAPI.Models.Post;
 using System;

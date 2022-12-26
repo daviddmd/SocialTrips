@@ -1,7 +1,4 @@
-﻿using BackendAPI.Models.Activity;
-using BackendAPI.Models.Attachment;
-using BackendAPI.Models.Post;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace BackendAPI.Models.Trip

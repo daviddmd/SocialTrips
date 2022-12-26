@@ -13,7 +13,7 @@ namespace BackendAPI.Helpers
     {
         public const int ImageMinimumBytes = 512;
         private readonly static string[] AllowedImageExtensions = { ".jpg", ".png", ".gif", ".jpeg" };
-        private readonly static string[] AllowedVideoExtensions = { ".mp4", ".avi", ".mov", ".mkv",".webm",".wmv" };
+        private readonly static string[] AllowedVideoExtensions = { ".mp4", ".avi", ".mov", ".mkv", ".webm", ".wmv" };
         private readonly static string[] AllowedImageMimeTypes = { "image/jpg", "image/jpeg", "image/pjpeg", "image/gif", "image/x-png", "image/png" };
         /// <summary>
         /// Checks for the Validity of an image file (valid file extension, MIME type or any sort of disguised file)
@@ -26,7 +26,8 @@ namespace BackendAPI.Helpers
             {
                 return false;
             }
-            if (!AllowedImageExtensions.Contains(Path.GetExtension(postedFile.FileName).ToLower())){
+            if (!AllowedImageExtensions.Contains(Path.GetExtension(postedFile.FileName).ToLower()))
+            {
                 return false;
             }
             try

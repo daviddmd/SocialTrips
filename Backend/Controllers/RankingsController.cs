@@ -55,7 +55,7 @@ namespace BackendAPI.Controllers
             {
                 return NotFound();
             }
-            return _mapper.Map<Ranking,RankingModelAdmin>(ranking);
+            return _mapper.Map<Ranking, RankingModelAdmin>(ranking);
         }
         /// <summary>
         /// Atualizar os detalhes de um ranking no sistema
@@ -87,7 +87,7 @@ namespace BackendAPI.Controllers
             {
                 return BadRequest(new ErrorModel() { ErrorType = exception.ErrorType, Message = exception.Message });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new ErrorModel() { ErrorType = ErrorType.OTHER, Message = ex.Message });
             }
@@ -102,7 +102,7 @@ namespace BackendAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<RankingModelAdmin>> CreateRanking(RankingCreateModel model)
         {
-            Ranking r = _mapper.Map<RankingCreateModel,Ranking>(model);
+            Ranking r = _mapper.Map<RankingCreateModel, Ranking>(model);
             try
             {
                 await _repository.Create(r);

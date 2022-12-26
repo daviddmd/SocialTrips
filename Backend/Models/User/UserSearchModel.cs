@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace BackendAPI.Models.User
+﻿namespace BackendAPI.Models.User
 {
     public class UserSearchModel
     {

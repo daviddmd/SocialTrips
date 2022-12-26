@@ -1,6 +1,4 @@
-﻿using BackendAPI.Entities.Enums;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
 
 namespace BackendAPI.Entities
 {

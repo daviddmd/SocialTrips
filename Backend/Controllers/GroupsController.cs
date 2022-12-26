@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
 using BackendAPI.Entities;
-using BackendAPI.Repositories;
-using AutoMapper;
-using BackendAPI.Models.Group;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using BackendAPI.Entities.Enums;
 using BackendAPI.Exceptions;
 using BackendAPI.Models;
+using BackendAPI.Models.Group;
+using BackendAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BackendAPI.Controllers
 {
@@ -55,7 +55,7 @@ namespace BackendAPI.Controllers
             IEnumerable<Group> groups = await _repository.GetAll();
             if (!is_admin)
             {
-                groups = groups.Where(g => !(g.IsPrivate && !user.Groups.Any(ug=>ug.Group.Id == g.Id)));
+                groups = groups.Where(g => !(g.IsPrivate && !user.Groups.Any(ug => ug.Group.Id == g.Id)));
                 IEnumerable<GroupModelSimple> groups_ret = from g in groups select _mapper.Map<Group, GroupModelSimple>(g);
                 return Ok(groups_ret);
             }
@@ -173,7 +173,7 @@ namespace BackendAPI.Controllers
             bool is_admin = user_roles.Contains(Enum.GetName(UserRole.ADMIN));
             Group group = await _repository.GetById(model.GroupId);
             User user_to_add = await _userManager.FindByIdAsync(model.UserId);
-            if (group == null|| user_to_add == null)
+            if (group == null || user_to_add == null)
             {
                 return NotFound();
             }
@@ -261,8 +261,8 @@ namespace BackendAPI.Controllers
             try
             {
                 await _repository.Create(group);
-                await _repository.AddUser(group,user,null,true);
-                return Ok(_mapper.Map<Group,GroupModelAdmin>(group));
+                await _repository.AddUser(group, user, null, true);
+                return Ok(_mapper.Map<Group, GroupModelAdmin>(group));
             }
             catch (CustomException exception)
             {
@@ -409,7 +409,7 @@ namespace BackendAPI.Controllers
             try
             {
                 //se for um admin, pode ignorar o requisito de convite caso o grupo seja privado
-                await _repository.AddUser(group, user,model.InviteId,is_admin);
+                await _repository.AddUser(group, user, model.InviteId, is_admin);
                 return Ok();
             }
             catch (CustomException exception)
@@ -485,7 +485,8 @@ namespace BackendAPI.Controllers
                 return NotFound();
             }
             UserGroupRole role = await _repository.GetUserRole(group, user);
-            if (!(is_admin || role == UserGroupRole.MANAGER)){
+            if (!(is_admin || role == UserGroupRole.MANAGER))
+            {
                 return Forbid();
             }
             try
@@ -616,13 +617,13 @@ namespace BackendAPI.Controllers
             IList<string> user_roles = await _userManager.GetRolesAsync(CurrentUser);
             bool is_admin = user_roles.Contains(Enum.GetName(UserRole.ADMIN));
             UserGroupRole role = await _repository.GetUserRole(group, CurrentUser);
-            if (!(role== UserGroupRole.MANAGER|| role == UserGroupRole.MODERATOR || is_admin))
+            if (!(role == UserGroupRole.MANAGER || role == UserGroupRole.MODERATOR || is_admin))
             {
                 return Forbid();
             }
             try
             {
-                await _repository.BanUser(group,user,model.BanReason,model.BanUntil,model.HidePosts);
+                await _repository.BanUser(group, user, model.BanReason, model.BanUntil, model.HidePosts);
                 return Ok();
             }
             catch (CustomException exception)
