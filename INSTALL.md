@@ -1,6 +1,6 @@
 # Technical Details
 
-The backend of this application is an ASP.NET Core API, that runs on ASP.NET Core 6. The frontend of this application is
+The backend of this application is an ASP.NET Core API, that runs on ASP.NET Core 6/7. The frontend of this application is
 an Angular 13 web application, that runs on NodeJS.
 
 The flow on the trips management interface on managing the daily itinerary requires interaction with a Google Maps
@@ -169,9 +169,10 @@ WantedBy=multi-user.target
 ```
 
 For the frontend, a CI/CD pipeline should be set up to automatically [build](https://angular.io/guide/deployment) the
-latest release (from tag or master) and deploy to the server's web root (in this example set at `/var/www/example`). The
+latest release (from tag or master) and deploy to the server's web root (in this example set at `/var/www/example`) with the correctly installed dependencies by running `npm install --legacy-peer-deps`. The
 configuration of the production variables of the Angular application will be set
 on [environment.prod.ts](Frontend/src/environments/environment.prod.ts).
+
 
 A different subdomain may be used for the API (or even a different server altogether), as long as such is defined in the
 environment configuration file and on the domain A and AAAA DNS records.
