@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace BackendAPI.Helpers
@@ -25,12 +24,10 @@ namespace BackendAPI.Helpers
             _googleCredential = GoogleCredential.FromJson(ServiceAccountConfiguration);
             _storageClient = StorageClient.Create(_googleCredential);
         }
-
         public async Task Delete(string DestinationFileName)
         {
             await _storageClient.DeleteObjectAsync(bucketName, DestinationFileName);
         }
-
         public async Task<string> Upload(IFormFile File, string DestinationFileName)
         {
             Google.Apis.Storage.v1.Data.Object dataObject = await _storageClient.UploadObjectAsync(bucketName, DestinationFileName, File.ContentType, File.OpenReadStream());

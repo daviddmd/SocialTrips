@@ -44,6 +44,10 @@ namespace BackendAPI.Repositories
             {
                 throw new CustomException(ErrorType.RANKING_EXISTS);
             }
+            if (ranking.MinimumKilometers < 0)
+            {
+                throw new CustomException(ErrorType.RANKING_INVALID_NUMBER_MINIMUM_KILOMETERS);
+            }
             _context.Rankings.Add(ranking);
             await _context.SaveChangesAsync();
             await UpdateUsersRankings();
@@ -75,6 +79,10 @@ namespace BackendAPI.Repositories
             if (await _context.Rankings.AnyAsync(r => r.MinimumKilometers == model.MinimumKilometers && r.Id != ranking.Id))
             {
                 throw new CustomException(ErrorType.RANKING_EXISTS);
+            }
+            if (model.MinimumKilometers < 0)
+            {
+                throw new CustomException(ErrorType.RANKING_INVALID_NUMBER_MINIMUM_KILOMETERS);
             }
             ranking.MinimumKilometers = model.MinimumKilometers;
             ranking.Description = model.Description;

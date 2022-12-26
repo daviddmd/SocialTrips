@@ -27,6 +27,12 @@ namespace BackendAPI.Repositories
 
 
         //na entrada de um membro recalcular se o mesmo tem experiência, e se sim, atualizar o atributo. na saida de um membro, verificar se o grupo continua a ter experiência, e se sim, manter, caso contrário...
+        /// <summary>
+        /// Checks whether or not a Group has an experienced member. Every time a user joins or leaves a group, a group may gain or lose an experienced member, so this is checked on both of these events
+        /// and this information may be associated with the group's details.
+        /// </summary>
+        /// <param name="group">Group to check if any experienced member is present</param>
+        /// <returns>The existence of any experienced member in a group</returns>
         public async Task<bool> GroupHasExperiencedMember(Group group)
         {
             return await _context.UserGroups.AnyAsync(userGroup => userGroup.User.TravelledKilometers > 1000 && userGroup.Group == group);

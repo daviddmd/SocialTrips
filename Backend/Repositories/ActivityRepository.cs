@@ -22,7 +22,6 @@ namespace BackendAPI.Repositories
             _context = context;
             _googleMapsHelper = googleMapsHelper;
         }
-
         public async Task AddActivity(Trip trip, Activity activity, Activity transport)
         {
             /*

@@ -122,7 +122,7 @@ namespace BackendAPI.Controllers
         /// 
         /// Nota-se que internamente as publicações têm uma data interna (PublishedDate), que é quando as mesmas efectivamente entraram no sistema (base de dados), usado para indicar quando a mesma foi publicada OU editada.
         /// 
-        /// O autori da publicação é o utilizador que realiza o pedido, e o mesmo tem que estar na viagem e no grupo onde a publicação irá ser inserida (salvo se for o administrador do sistema)
+        /// O autor da publicação é o utilizador que realiza o pedido, e o mesmo tem que estar na viagem e no grupo onde a publicação irá ser inserida (salvo se for o administrador do sistema)
         /// </remarks>
         /// <param name="model">Modelo com os detalhes da publicação a criar, nomeadamente o ID da viagem, a descrição (corpo) da publicação e a data do evento da publicação</param>
         /// <returns></returns>

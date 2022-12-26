@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using BackendAPI.Entities.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace BackendAPI.Entities

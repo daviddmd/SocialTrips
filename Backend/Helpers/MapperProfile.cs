@@ -12,6 +12,9 @@ using System.Collections.Generic;
 
 namespace BackendAPI.Data
 {
+    /// <summary>
+    /// AutoMapper Profile
+    /// </summary>
     public class MapperProfile : Profile
     {
         public MapperProfile()

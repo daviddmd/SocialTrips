@@ -48,10 +48,8 @@ namespace BackendAPI.Helpers
                 .WithTo(new SendContact(Destination))
                 .Build();
             TransactionalEmailResponse response = await _mailjetClient.SendTransactionalEmailAsync(email);
-            //Uma resposta para cada e-mail enviado
             return (response.Messages.Length == 1 && response.Messages[0].Status == "success");
         }
-        //retorna um tuplo com o nº de mensagens entregues e não entregues
         public async Task<(int,int)> SendEmailToMultiple(string Subject, string Body,List<string> Destinations)
         {
             Body += _footer;

@@ -140,7 +140,11 @@ namespace BackendAPI.Repositories
                 throw new CustomException("Activities already exist before the beginning date or after the ending date", ErrorType.TRIP_DATE_EXISTING_ACTIVITIES);
             }
             //A nova data de início não pode ser antes da data actual, caso contrário estaremos a criar uma viagem no passado
-            if (model.BeginningDate.Date < DateTime.Now.Date || model.EndingDate.Date < DateTime.Now.Date || model.BeginningDate > model.EndingDate && !(model.IsCompleted||trip.IsCompleted))
+            if (
+                (model.BeginningDate.Date != trip.BeginningDate.Date || model.EndingDate.Date != trip.EndingDate.Date) &&
+                (model.BeginningDate.Date < DateTime.Now.Date || model.EndingDate.Date < DateTime.Now.Date || model.BeginningDate > model.EndingDate) &&
+                !(model.IsCompleted||trip.IsCompleted)
+                )
             {
                 throw new CustomException("The beginning date of the trip must be in the future and the beginning date must be before the ending date", ErrorType.TRIP_DATE_INVALID);
             }
@@ -188,12 +192,10 @@ namespace BackendAPI.Repositories
             TripInvite invite = await _context.TripInvites.Where(ti => ti.Id == InviteId && ti.User.Id == user.Id && ti.Trip.Id == trip.Id).FirstOrDefaultAsync();
             bool WasInvited = false;
             //se for gestor do grupo ou administrador do sistema, não precisa de dar convite para entrar na viagem
-            if (trip.IsPrivate && !IsManager)
+            if (trip.IsPrivate && !IsManager && invite == null)
             {
-                if (invite == null)
-                {
-                    throw new CustomException("This invite doesn't exist.", ErrorType.TRIP_INVITE_INVALID);
-                }
+                throw new CustomException("This invite doesn't exist.", ErrorType.TRIP_INVITE_INVALID);
+
             }
             //é possível juntar-se a um grupo ou viagem que não seja privado com convite
             if (invite!=null)

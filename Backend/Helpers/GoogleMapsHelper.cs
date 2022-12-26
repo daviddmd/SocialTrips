@@ -62,6 +62,7 @@ namespace BackendAPI.Helpers
         public async Task<IEnumerable<ActivityTransportModel>> GetAllTransporationMethods(ActivitySearchTransportModel model)
         {
             var sanitizer = new HtmlSanitizer();
+            sanitizer.AllowedCssProperties.Clear();
             DateTime departTime = model.DepartTime < DateTime.Now ? DateTime.Now : model.DepartTime;
             List<ActivityTransportModel> result = new();
             Place origin = new(model.OriginPlaceId);
@@ -103,7 +104,6 @@ namespace BackendAPI.Helpers
                     }
                 }
                 Description += "</ol>\n";
-                sanitizer.AllowedCssProperties.Clear();
                 Description = sanitizer.Sanitize(Description);
                 DateTime DepartureTime = departTime;
                 DateTime ArrivalTime = DepartureTime.AddSeconds(leg.Duration.Value);

@@ -6,13 +6,20 @@ using System.Text.RegularExpressions;
 
 namespace BackendAPI.Helpers
 {
+    /// <summary>
+    /// File Helper class to provide helper methods for validating media files before uploading them
+    /// </summary>
     public class FileHelper
     {
         public const int ImageMinimumBytes = 512;
         private readonly static string[] AllowedImageExtensions = { ".jpg", ".png", ".gif", ".jpeg" };
         private readonly static string[] AllowedVideoExtensions = { ".mp4", ".avi", ".mov", ".mkv",".webm",".wmv" };
         private readonly static string[] AllowedImageMimeTypes = { "image/jpg", "image/jpeg", "image/pjpeg", "image/gif", "image/x-png", "image/png" };
-
+        /// <summary>
+        /// Checks for the Validity of an image file (valid file extension, MIME type or any sort of disguised file)
+        /// </summary>
+        /// <param name="postedFile">Form File of an Image to Upload</param>
+        /// <returns></returns>
         public static bool IsImage(IFormFile postedFile)
         {
             if (!AllowedImageMimeTypes.Contains(postedFile.ContentType.ToLower()))
@@ -49,6 +56,11 @@ namespace BackendAPI.Helpers
 
             return true;
         }
+        /// <summary>
+        ///  Checks for the Validity of a video file (valid file extension and MIME type)
+        /// </summary>
+        /// <param name="postedFile">Form File of a Video to Upload</param>
+        /// <returns></returns>
         public static bool IsVideo(IFormFile postedFile)
         {
             if (!postedFile.ContentType.ToLower().StartsWith("video"))
